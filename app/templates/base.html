@@ -9,7 +9,8 @@
 {#    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo_2.png') }}">#}
 
     <!-- (Optional) Your custom styles -->
-{#        <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">#}
+
+    {#        <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">#}
 {#        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">#}
 {#        <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">#}
 {#        <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">#}
@@ -18,11 +19,16 @@
 <body>
 
 {#    {% include "partials/_navbar.html" %}#}
-
+    <main>
 
     {% block body %}
     {% endblock %}
 
+    <div class="container img-background">
+        <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="vinyl disc background"
+             class="logo rotate-animation-disc">
+    </div>
+    </main>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 

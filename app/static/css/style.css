@@ -9,6 +9,41 @@
     --color-github: #181717;
 }
 
-*{
+body {
     background-color: var(--color-bg);
+    margin: 0;
 }
+
+main {
+    max-width: 1920px;
+    margin: 0 auto;
+    position: relative; /* Useful for absolute children like .img-background */
+    min-height: 100vh;
+    overflow: hidden; /* Prevent background image from causing scrollbars */
+}
+
+.img-background{
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    left: 70%; /* Changed from 66% to center it within main */
+    width: 66.66%; /* Changed from vw to % to be relative to main */
+    transform: translate(-50%, -50%);
+    filter: blur(20px);
+    -webkit-filter: blur(20px);
+    pointer-events: none; /* Ensure it doesn't interfere with clicks */
+}
+
+@keyframes rotate-disc {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .rotate-animation-disc {
+            animation: rotate-disc 30s infinite;
+            transform-origin: center;
+        }
