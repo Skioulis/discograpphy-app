@@ -1,0 +1,14 @@
+:root{
+    --color-bg: #FBF3D5;
+    --color-surface: #D6DAC8;
+    --color-accent: #9CAFAA;
+    --color-primary: #D6A99D;
+    --color-text: #1f2937;
+    --color-email: #EA4335;
+    --color-linkedIn: #0A66C2;
+    --color-github: #181717;
+}
+
+*{
+    background-color: var(--color-bg);
+}
