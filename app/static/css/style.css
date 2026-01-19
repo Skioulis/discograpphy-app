@@ -47,3 +47,6 @@ main {
             animation: rotate-disc 30s infinite;
             transform-origin: center;
         }
+.navbar  {
+   margin-top: 20px;
+}
