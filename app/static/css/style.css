@@ -15,7 +15,6 @@ body {
 }
 
 main {
-    max-width: 1920px;
     margin: 0 auto;
     position: relative; /* Useful for absolute children like .img-background */
     min-height: 100vh;
@@ -49,9 +48,10 @@ main {
             transform-origin: center;
         }
 .navbar  {
-   margin-top: 20px;
-   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-   background-color: var(--color-surface);
+
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-surface);
 }
 
 .navbar-text{

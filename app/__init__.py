@@ -6,7 +6,8 @@ def create_app():
     app = Flask(__name__)
 
 
-    env = os.getenv('FLASK_ENV', 'development')
+    # env = os.getenv('FLASK_ENV', 'development')
+    env = os.getenv('FLASK_ENV')
 
     if env == 'production':
         load_dotenv('.env.production')
