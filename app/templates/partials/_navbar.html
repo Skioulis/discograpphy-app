@@ -1,27 +1,28 @@
-<div class="container-fluid justify-content-center ">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-3">
+<div class="container-fluid justify-content-center">
+    <nav class="navbar navbar-expand-lg rounded-3">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="Sakis Collection" width="30" height="30" class="logo rotate-animation-disc">
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link active " aria-current="page" href="{{ url_for('main.home') }}"><span class="navbar-text">Home</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <a class="nav-link navbar-text" href="#">Link</a>
             </li>
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown ">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
+                <span class="navbar-text">Dropdown </span>
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><a class="dropdown-item navbar-text" href="#">Action</a></li>
+                <li><a class="dropdown-item navbar-text" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider navbar-text"></li>
+                <li><a class="dropdown-item navbar-text" href="#">Something else here</a></li>
               </ul>
             </li>
             <li class="nav-item">

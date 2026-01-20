@@ -20,6 +20,7 @@ main {
     position: relative; /* Useful for absolute children like .img-background */
     min-height: 100vh;
     overflow: hidden; /* Prevent background image from causing scrollbars */
+    color: var(--color-text);
 }
 
 .img-background{
@@ -49,4 +50,14 @@ main {
         }
 .navbar  {
    margin-top: 20px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   background-color: var(--color-surface);
+}
+
+.navbar-text{
+    color: var(--color-text);
+}
+
+.navbar-container {
+
 }
