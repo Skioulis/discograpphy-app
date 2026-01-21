@@ -1,0 +1,62 @@
+.footer {
+    color: var(--color-text);
+    padding-top: 0.2rem;
+    text-align: center;
+    /*max-height: 80px;*/
+    font-size: 0.5rem;
+
+    /* let it span full viewport width at the bottom */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* optional: avoid being limited by parent width */
+    width: 100vw;
+}
+
+/* optional: if you want content centered with internal max width */
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-size: 1em;
+    padding: 0.5rem;
+}
+
+.footer a {
+    /*color: var(--color-text);*/
+    text-decoration: none;
+    outline: none; /* let us control the ring */
+}
+
+/* Hover (mouse) */
+.footer a:hover {
+    color: #0A66C2;
+
+}
+
+.footer a:focus-visible {
+    outline: 2px solid #0A66C2;         /* accent color */
+    outline-offset: 3px;                 /* space between element and ring */
+    border-radius: 6px;                  /* optional: soften corners */
+}
+
+
+.email-link {
+    color: var(--color-email);
+    text-decoration: none;
+}
+
+.linkedIn-link {
+    color: var(--color-linkedIn);
+}
+
+.github-link {
+    color: var(--color-github);
+}
+
+.github-link:hover .email-link:hover .linkedIn-link:hover {
+    color: var(--color-accent);
+    opacity: 0.8;
+
+}

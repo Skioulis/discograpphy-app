@@ -21,6 +21,11 @@ def create_app():
     from .app import main_bp
     app.register_blueprint(main_bp)
 
+    from datetime import datetime
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.utcnow()}
+
     return app
 
 
