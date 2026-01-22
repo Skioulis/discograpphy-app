@@ -23,16 +23,43 @@
     padding: 0.5rem;
 }
 
-.footer a {
-    /*color: var(--color-text);*/
-    text-decoration: none;
+footer a, footer a:hover, footer a:focus, footer a:active {
+    text-decoration: none !important;
+}
+
+.footer a, .footer a:hover, .footer a:focus, .footer a:active {
+    text-decoration: none !important;
     outline: none; /* let us control the ring */
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
 }
 
 /* Hover (mouse) */
 .footer a:hover {
     color: #0A66C2;
+    transform: scale(1.2);
+}
 
+/* For the new footer icons */
+.nav .ms-3 a, .col-md-4 a[aria-label="Home"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    text-decoration: none !important;
+}
+
+.nav .ms-3 a:hover, .col-md-4 a[aria-label="Home"]:hover {
+    transform: scale(1.2);
+    background-color: rgba(0, 0, 0, 0.05); /* Light circle background */
+}
+
+[data-bs-theme="dark"] .nav .ms-3 a:hover, 
+[data-bs-theme="dark"] .col-md-4 a[aria-label="Home"]:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Light circle for dark mode */
 }
 
 .footer a:focus-visible {

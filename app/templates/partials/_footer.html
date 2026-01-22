@@ -1,27 +1,29 @@
 
-<footer class="footer box-container">
-    <div class="footer-content styled-box">
-        <div class="footer-left">
-            <span>Created by Fotis Fotiadis <span class="copyright-symbol"><i class="fa-regular fa-copyright fa-shake"></i></span> {{ now.year }}</span>
-        </div>
-        <div class="footer-right">
-            <span>
-                <a href="mailto:fotis.fotiadis.85@gmail.com" class="email-link" title="Email">
-                    <i class="fa-solid fa-envelope email-link"></i>
-                 </a>
-            </span>
-            <span>
-                <a href="https://www.linkedin.com/in/fotis-fotiadis/" class="linkedIn-link"
-                   title="LinkedIn" target="_blank">
-                   <i class="fa-brands fa-linkedin linkedIn-link"></i>
+<div class="container">
+{#        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-2 border-top">#}
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-2">
+            <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1 rounded-circle" aria-label="Home">
+                    <i class="fa-solid fa-house fa-xl"></i>
                 </a>
-            </span>
-            <span>
-                <a href="https://github.com/Skioulis" class="github-link"
-                   title="GitHub" target="_blank">
-                    <i class="fa-brands fa-github github-link"></i>
-                 </a>
-            </span>
-        </div>
+                <span class="mb-3 mb-md-0 text-body-secondary"><span>Created by Fotis Fotiadis <span class="copyright-symbol"><i class="fa-regular fa-copyright fa-shake"></i></span> {{ now.year }}</span></span>
+            </div>
+            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-3 rounded">
+                    <a class="text-body-secondary" href="mailto:fotis.fotiadis.85@gmail.com" aria-label="email">
+                        <i class="fa-regular fa-envelope fa-xl"></i>
+                    </a>
+                </li>
+                <li class="ms-3">
+                    <a class="text-body-secondary rounded-circle " href="https://www.linkedin.com/in/fotis-fotiadis/" aria-label="linkedin">
+                        <i class="fa-brands fa-linkedin-in fa-xl"></i>
+                    </a>
+                </li>
+                <li class="ms-3">
+                    <a class="text-body-secondary" href="https://github.com/Skioulis" aria-label="github">
+                        <i class="fa-brands fa-github fa-xl"></i>
+                    </a>
+                </li>
+            </ul>
+        </footer>
     </div>
-</footer>
