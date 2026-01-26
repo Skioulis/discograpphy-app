@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
+
+if TYPE_CHECKING:
+    from .Song import Song
 
 class Lyric(db.Model):
     __tablename__ = 'lyrics'

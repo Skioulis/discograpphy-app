@@ -19,6 +19,9 @@ def create_app():
     print(app.config['SECRET_KEY'])
     print(app.config['SQLALCHEMY_DATABASE_URI'])
     db.init_app(app)
+    
+    with app.app_context():
+        from . import models
 
 
 

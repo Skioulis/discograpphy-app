@@ -7,6 +7,7 @@ from .associations import discsongs
 if TYPE_CHECKING:
     from .Disk import Disk
     from .Lyric import Lyric
+    from .associations import PeopleSong
 
 class Song(db.Model):
     __tablename__ = 'songs'
@@ -21,6 +22,8 @@ class Song(db.Model):
         secondary=discsongs,
         back_populates='songs'
     )
+
+    people: so.Mapped[List['PeopleSong']] = so.relationship(back_populates='song')
 
     def __repr__(self):
         return f'<Song {self.title}>'
