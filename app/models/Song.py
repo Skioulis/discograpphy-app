@@ -1,9 +1,11 @@
 from typing import List, Optional, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app import db
+from .db import db
+from .associations import discsongs
 
 if TYPE_CHECKING:
+    from .Disk import Disk
     from .Lyric import Lyric
 
 class Song(db.Model):
@@ -14,6 +16,11 @@ class Song(db.Model):
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
 
     lyrics: so.Mapped[List['Lyric']] = so.relationship(back_populates='song', cascade='all, delete-orphan')
+    
+    disks: so.Mapped[List['Disk']] = so.relationship(
+        secondary=discsongs,
+        back_populates='songs'
+    )
 
     def __repr__(self):
         return f'<Song {self.title}>'

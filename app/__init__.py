@@ -18,8 +18,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Config.SQLALCHEMY_TRACK_MODIFICATIONS
     print(app.config['SECRET_KEY'])
     print(app.config['SQLALCHEMY_DATABASE_URI'])
-    db = SQLAlchemy(app)
-    # migrate = Migrate(app, db)
     db.init_app(app)
 
 
