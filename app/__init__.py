@@ -6,6 +6,9 @@ from flask_wtf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+
+migrate = Migrate()
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -19,9 +22,11 @@ def create_app():
     print(app.config['SECRET_KEY'])
     print(app.config['SQLALCHEMY_DATABASE_URI'])
     db.init_app(app)
+    migrate.init_app(app, db)
     
     with app.app_context():
         from . import models
+        db.create_all()
 
 
 
