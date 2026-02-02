@@ -17,7 +17,7 @@ class PeopleSong(db.Model):
     __tablename__ = 'peoplesongs'
 
     person_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('people.person_id'), primary_key=True)
-    song_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('songs.id'), primary_key=True)
+    song_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('songs.song_id'), primary_key=True)
     isComposer: so.Mapped[bool] = so.mapped_column(default=False)
     isSongwriter: so.Mapped[bool] = so.mapped_column(default=False)
     isSinger: so.Mapped[bool] = so.mapped_column(default=False)
