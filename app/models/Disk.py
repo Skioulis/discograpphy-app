@@ -1,13 +1,13 @@
 from typing import Optional, List, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .db import db
+from .db import db, TimestampMixin
 from .associations import discsongs
 
 if TYPE_CHECKING:
     from .Song import Song
 
-class Disk(db.Model):
+class Disk(db.Model, TimestampMixin):
     __tablename__ = 'disks'
 
     disk_id: so.Mapped[int] = so.mapped_column(primary_key=True)

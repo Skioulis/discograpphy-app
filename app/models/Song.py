@@ -1,7 +1,7 @@
 from typing import List, Optional, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .db import db
+from .db import db, TimestampMixin
 from .associations import discsongs
 
 if TYPE_CHECKING:
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from .Lyric import Lyric
     from .associations import PeopleSong
 
-class Song(db.Model):
+class Song(db.Model, TimestampMixin):
     __tablename__ = 'songs'
 
     song_id: so.Mapped[int] = so.mapped_column(primary_key=True)

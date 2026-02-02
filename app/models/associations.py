@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .db import db
+from .db import db, TimestampMixin
 
 if TYPE_CHECKING:
     from .Person import Person
@@ -13,7 +13,7 @@ discsongs = db.Table(
     db.Column('songid', sa.Integer, sa.ForeignKey('songs.song_id'), primary_key=True)
 )
 
-class PeopleSong(db.Model):
+class PeopleSong(db.Model, TimestampMixin):
     __tablename__ = 'peoplesongs'
 
     person_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('people.person_id'), primary_key=True)

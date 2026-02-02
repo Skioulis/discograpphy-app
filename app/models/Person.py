@@ -1,12 +1,12 @@
 from typing import Optional, List, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .db import db
+from .db import db, TimestampMixin
 
 if TYPE_CHECKING:
     from .associations import PeopleSong
 
-class Person(db.Model):
+class Person(db.Model, TimestampMixin):
     __tablename__ = 'people'
 
     person_id: so.Mapped[int] = so.mapped_column(primary_key=True)

@@ -1,12 +1,12 @@
 from typing import Optional, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .db import db
+from .db import db, TimestampMixin
 
 if TYPE_CHECKING:
     from .Song import Song
 
-class Lyric(db.Model):
+class Lyric(db.Model, TimestampMixin):
     __tablename__ = 'lyrics'
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
