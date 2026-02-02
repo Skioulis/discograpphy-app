@@ -30,8 +30,8 @@ def create_app():
 
 
 
-    # Import and register the blueprint from app.py
-    from .app import main_bp
+    # Import and register the blueprint from routes.py
+    from .routes import main_bp
     app.register_blueprint(main_bp)
 
     from datetime import datetime
