@@ -13,7 +13,7 @@ discsongs = db.Table(
     db.Column('songid', sa.Integer, sa.ForeignKey('songs.song_id'), primary_key=True)
 )
 
-class PeopleSong(db.Model, TimestampMixin):
+class PeopleSong(db.Model):
     __tablename__ = 'peoplesongs'
 
     person_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('people.person_id'), primary_key=True)

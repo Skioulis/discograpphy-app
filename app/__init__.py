@@ -19,8 +19,8 @@ def create_app():
     # env = os.getenv('FLASK_ENV', 'development')
     app.config['SQLALCHEMY_DATABASE_URI'] = dc.database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Config.SQLALCHEMY_TRACK_MODIFICATIONS
-    print(app.config['SECRET_KEY'])
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
+    # print(app.config['SECRET_KEY'])
+    # print(app.config['SQLALCHEMY_DATABASE_URI'])
     db.init_app(app)
     migrate.init_app(app, db)
     
