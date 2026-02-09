@@ -2,7 +2,12 @@
 {% block title %} THE MAIN PAGE {% endblock %}
 {% block body %}
     <h1>MAIN PAGE</h1>
-    <h2>hi</h2>
+    <h2>Recent Songs</h2>
+    <ul>
+        {% for song in songs %}
+            <li>{{ song.title }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
 
 {% block scripts %}{% endblock %}

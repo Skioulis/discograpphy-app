@@ -1,16 +1,23 @@
-from flask import Flask
+from flask import Flask, request
 from .models.db import db
 from config import DevelopmentConfig as dc
 from config import Config
 from flask_wtf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_babel import Babel
 
+babel = Babel()
+
+def get_locale():
+    return request.accept_languages.best_match(['en', 'el'])
 
 migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
+
+    babel.init_app(app, locale_selector=get_locale)
     app.config.from_object(Config)
     app.config['SECRET_KEY'] = Config.SECRET_KEY
     csrf = CSRFProtect(app)

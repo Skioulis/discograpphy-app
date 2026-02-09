@@ -11,14 +11,14 @@
             <li class="nav-item">
               <a class="nav-link active " aria-current="page" href="{{ url_for('main.home') }}"><span class="navbar-text">Home</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link navbar-text" href="#">Link</a>
-            </li>
             <li class="nav-item dropdown ">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="navbar-text">Dropdown </span>
+                <span class="navbar-text">Add </span>
               </a>
               <ul class="dropdown-menu">
+                <li class="nav-item">
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_disk') }}">Add Disk</a>
+                </li>
                 <li><a class="dropdown-item navbar-text" href="#">Action</a></li>
                 <li><a class="dropdown-item navbar-text" href="#">Another action</a></li>
                 <li><hr class="dropdown-divider navbar-text"></li>

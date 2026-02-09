@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %} Add New Disk {% endblock %}
+{% block body %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Add New Disk</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.add_disk') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Enter disk name") }}
+                            {% for error in form.name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.company.label(class="form-label") }}
+                            {{ form.company(class="form-control" + (" is-invalid" if form.company.errors else ""), placeholder="Enter company name") }}
+                            {% for error in form.company.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.size.label(class="form-label") }}
+                                {{ form.size(class="form-control" + (" is-invalid" if form.size.errors else ""), placeholder="e.g. 12\", CD") }}
+                                {% for error in form.size.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.sakisid.label(class="form-label") }}
+                                {{ form.sakisid(class="form-control" + (" is-invalid" if form.sakisid.errors else ""), placeholder="Internal ID") }}
+                                {% for error in form.sakisid.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.notes.label(class="form-label") }}
+                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes...") }}
+                            {% for error in form.notes.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

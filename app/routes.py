@@ -15,7 +15,7 @@ def home():
     songs = Song.query.limit(5).all()
     print(songs)
 
-    return render_template('index.html')
+    return render_template('index.html', songs=songs)
 
 @main_bp.route('/add-disk', methods=['GET', 'POST'])
 def add_disk():
@@ -31,6 +31,6 @@ def add_disk():
         db.session.add(new_disk)
         db.session.commit()
         flash('Disk added successfully!')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.home'))
     return render_template('add_disk.html', form=form)
 

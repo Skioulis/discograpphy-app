@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
-from models import Disk
+from ..models.Disk import Disk
 
 
 class DiskForm(FlaskForm):
