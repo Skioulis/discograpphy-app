@@ -10,6 +10,9 @@ if TYPE_CHECKING:
 
 class Company(db.Model, TimestampMixin):
     __tablename__ = 'companies'
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'labels_size', name='uq_company_name_labels_size'),
+    )
 
     company_id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(250), index=True)

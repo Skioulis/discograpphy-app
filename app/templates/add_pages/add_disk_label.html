@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %} Add New Disk Label {% endblock %}
+{% block body %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">Add New Disk Label</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.add_disk_label') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.label.label(class="form-label") }}
+                            {{ form.label(class="form-control" + (" is-invalid" if form.label.errors else ""), placeholder="Enter label text") }}
+                            {% for error in form.label.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.company_id.label(class="form-label") }}
+                            {{ form.company_id(class="form-select" + (" is-invalid" if form.company_id.errors else "")) }}
+                            {% for error in form.company_id.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-info btn-lg") }}
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
