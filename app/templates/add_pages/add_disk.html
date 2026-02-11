@@ -20,18 +20,18 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form.company.label(class="form-label") }}
-                            {{ form.company(class="form-control" + (" is-invalid" if form.company.errors else ""), placeholder="Enter company name") }}
-                            {% for error in form.company.errors %}
+                            {{ form.company_id.label(class="form-label") }}
+                            {{ form.company_id(class="form-select" + (" is-invalid" if form.company_id.errors else "")) }}
+                            {% for error in form.company_id.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                {{ form.size.label(class="form-label") }}
-                                {{ form.size(class="form-control" + (" is-invalid" if form.size.errors else ""), placeholder="e.g. 12\", CD") }}
-                                {% for error in form.size.errors %}
+                                {{ form.labels_size.label(class="form-label") }}
+                                {{ form.labels_size(class="form-select" + (" is-invalid" if form.labels_size.errors else "")) }}
+                                {% for error in form.labels_size.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
                             </div>

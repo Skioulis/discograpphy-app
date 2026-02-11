@@ -23,11 +23,14 @@ def home():
 @main_bp.route('/add-disk', methods=['GET', 'POST'])
 def add_disk():
     form = DiskForm()
+    # Populate company choices
+    form.company_id.choices = [(c.company_id, f"{c.name} {c.labels_size}") for c in Company.query.order_by(Company.name).all()]
+
     if form.validate_on_submit():
         new_disk = Disk(
             name=form.name.data,
             company_id=form.company_id.data,
-            size=form.size.data,
+            size=form.labels_size.data,
             sakisid=form.sakisid.data,
             notes=form.notes.data
         )

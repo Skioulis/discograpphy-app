@@ -2,12 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError
 from ..models.Company import Company
+from . import DISK_SIZE_CHOICES
 
-CHOICES = [(33, '33'), (45, '45'), (78, '78')]
 
 class CompanyForm(FlaskForm):
     name = StringField('Company Name', validators=[DataRequired(), Length(max=250)])
-    labels_size = SelectField('Labels Size', choices=CHOICES, coerce=int, default=45, validators=[Optional()])
+    labels_size = SelectField('Labels Size', choices=DISK_SIZE_CHOICES, coerce=int, default=45, validators=[Optional()])
     info = TextAreaField('Information', validators=[Optional()])
     submit = SubmitField('Add Company')
 
