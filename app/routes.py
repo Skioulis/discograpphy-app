@@ -7,6 +7,9 @@ from .models.Company import Company
 from .forms.company_form import CompanyForm
 from .models.DiskLabel import DiskLabel
 from .forms.disk_label_form import DiskLabelForm
+from .models.Person import Person
+from .forms.person_form import PersonForm
+from .forms.song_form import SongForm
 
 
 
@@ -71,4 +74,45 @@ def add_disk_label():
         flash('Disk Label added successfully!')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_disk_label.html', form=form)
+
+
+@main_bp.route('/add-person', methods=['GET', 'POST'])
+def add_person():
+    form = PersonForm()
+    if form.validate_on_submit():
+        new_person = Person(
+            name=form.name.data,
+            notes=form.notes.data
+        )
+        db.session.add(new_person)
+        db.session.commit()
+        flash('Person added successfully!')
+        return redirect(url_for('main.home'))
+    return render_template('add_pages/add_person.html', form=form)
+
+
+@main_bp.route('/add-song', methods=['GET', 'POST'])
+def add_song():
+    form = SongForm()
+    # Populate disk choices
+    disks = Disk.query.order_by(Disk.name).all()
+    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
+
+    if form.validate_on_submit():
+        new_song = Song(
+            title=form.title.data,
+            notes=form.notes.data
+        )
+        
+        # Link to disk if selected
+        if form.disk_id.data and form.disk_id.data != 0:
+            disk = Disk.query.get(form.disk_id.data)
+            if disk:
+                new_song.disks.append(disk)
+
+        db.session.add(new_song)
+        db.session.commit()
+        flash('Song added successfully!')
+        return redirect(url_for('main.home'))
+    return render_template('add_pages/add_song.html', form=form)
 

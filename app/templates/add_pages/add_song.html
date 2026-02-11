@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} Add New Song {% endblock %}
+{% block body %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">Add New Song</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.add_song') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), placeholder="Enter song title") }}
+                            {% for error in form.title.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.disk_id.label(class="form-label") }}
+                            {{ form.disk_id(class="form-select" + (" is-invalid" if form.disk_id.errors else "")) }}
+                            {% for error in form.disk_id.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Optional: Link this song to a disk now.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.notes.label(class="form-label") }}
+                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes or lyrics info...") }}
+                            {% for error in form.notes.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-warning btn-lg") }}
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}{% endblock %}
