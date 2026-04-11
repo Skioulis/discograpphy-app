@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from .models.Song import Song
+from .models.Lyric import Lyric
 from .models.db import db
 from .forms.disk_form import DiskForm
 from .models.Disk import Disk
@@ -103,6 +104,10 @@ def add_song():
             title=form.title.data,
             notes=form.notes.data
         )
+        
+        # Add lyrics if provided
+        if form.lyrics.data:
+            new_song.lyrics.append(Lyric(lyric=form.lyrics.data))
         
         # Link to disk if selected
         if form.disk_id.data and form.disk_id.data != 0:

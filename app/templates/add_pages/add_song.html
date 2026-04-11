@@ -29,8 +29,16 @@
                         </div>
 
                         <div class="mb-3">
+                            {{ form.lyrics.label(class="form-label") }}
+                            {{ form.lyrics(class="form-control" + (" is-invalid" if form.lyrics.errors else ""), rows="6", placeholder="Enter song lyrics...") }}
+                            {% for error in form.lyrics.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
                             {{ form.notes.label(class="form-label") }}
-                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes or lyrics info...") }}
+                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes or info...") }}
                             {% for error in form.notes.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
