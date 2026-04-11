@@ -28,6 +28,63 @@
                             <div class="form-text">Optional: Link this song to a disk now.</div>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Persons & Roles</label>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle" id="persons-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">Person</th>
+                                            <th scope="col">Roles</th>
+                                            <th scope="col" style="width: 50px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="persons-tbody">
+                                        {% for person_form in form.persons %}
+                                        <tr class="person-row">
+                                            <td>
+                                                {{ person_form.person_name(class="form-control", list="persons-datalist", placeholder="Search or add person...") }}
+                                                {% for error in person_form.person_name.errors %}
+                                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-wrap gap-3">
+                                                    <div class="form-check">
+                                                        {{ person_form.isSinger(class="form-check-input") }}
+                                                        {{ person_form.isSinger.label(class="form-check-label") }}
+                                                    </div>
+                                                    <div class="form-check">
+                                                        {{ person_form.isComposer(class="form-check-input") }}
+                                                        {{ person_form.isComposer.label(class="form-check-label") }}
+                                                    </div>
+                                                    <div class="form-check">
+                                                        {{ person_form.isSongwriter(class="form-check-input") }}
+                                                        {{ person_form.isSongwriter.label(class="form-check-label") }}
+                                                    </div>
+                                                    <div class="form-check">
+                                                        {{ person_form.isMusician(class="form-check-input") }}
+                                                        {{ person_form.isMusician.label(class="form-check-label") }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-success add-row-btn">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <datalist id="persons-datalist">
+                                {% for person in all_persons %}
+                                <option value="{{ person.name }}">
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
                         <div class="mb-3">
                             {{ form.lyrics.label(class="form-label") }}
                             {{ form.lyrics(class="form-control" + (" is-invalid" if form.lyrics.errors else ""), rows="6", placeholder="Enter song lyrics...") }}
@@ -55,4 +112,51 @@
     </div>
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('persons-tbody');
+    
+    tbody.addEventListener('click', function(e) {
+        if (e.target.closest('.add-row-btn')) {
+            const rows = tbody.querySelectorAll('.person-row');
+            const lastRow = rows[rows.length - 1];
+            const newRow = lastRow.cloneNode(true);
+            const newIndex = rows.length;
+            
+            // Update names and IDs of inputs
+            const inputs = newRow.querySelectorAll('input');
+            inputs.forEach(input => {
+                const oldName = input.getAttribute('name');
+                const oldId = input.getAttribute('id');
+                
+                if (oldName) {
+                    const newName = oldName.replace(/persons-\d+-/, `persons-${newIndex}-`);
+                    input.setAttribute('name', newName);
+                    input.setAttribute('id', newName);
+                    
+                    // Clear values
+                    if (input.type === 'text') {
+                        input.value = '';
+                    } else if (input.type === 'checkbox') {
+                        input.checked = false;
+                    }
+
+                    // Update corresponding labels
+                    const label = newRow.querySelector(`label[for="${oldId}"]`);
+                    if (label) {
+                        label.setAttribute('for', newName);
+                    }
+                }
+            });
+            
+            // Clear error messages in the cloned row
+            newRow.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+            newRow.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            tbody.appendChild(newRow);
+        }
+    });
+});
+</script>
+{% endblock %}

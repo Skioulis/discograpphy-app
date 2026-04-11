@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from .models.Song import Song
 from .models.Lyric import Lyric
+from .models.associations import PeopleSong
 from .models.db import db
 from .forms.disk_form import DiskForm
 from .models.Disk import Disk
@@ -99,6 +100,8 @@ def add_song():
     disks = Disk.query.order_by(Disk.name).all()
     form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
 
+    all_persons = Person.query.order_by(Person.name).all()
+
     if form.validate_on_submit():
         new_song = Song(
             title=form.title.data,
@@ -115,9 +118,28 @@ def add_song():
             if disk:
                 new_song.disks.append(disk)
 
+        # Process persons
+        for p_form in form.persons:
+            name = p_form.person_name.data
+            if name:
+                person = Person.query.filter_by(name=name).first()
+                if not person:
+                    person = Person(name=name)
+                    db.session.add(person)
+                
+                ps = PeopleSong(
+                    person=person,
+                    song=new_song,
+                    isSinger=p_form.isSinger.data,
+                    isComposer=p_form.isComposer.data,
+                    isSongwriter=p_form.isSongwriter.data,
+                    isMusician=p_form.isMusician.data
+                )
+                db.session.add(ps)
+
         db.session.add(new_song)
         db.session.commit()
         flash('Song added successfully!')
         return redirect(url_for('main.home'))
-    return render_template('add_pages/add_song.html', form=form)
+    return render_template('add_pages/add_song.html', form=form, all_persons=all_persons)
 
