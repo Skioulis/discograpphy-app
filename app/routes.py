@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
+from sqlalchemy import func
 from .models.Song import Song
 from .models.Lyric import Lyric
 from .models.associations import PeopleSong
@@ -19,10 +20,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def home():
-
-    songs = Song.query.limit(5).all()
-    print(songs)
-
+    songs = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).order_by(func.random()).limit(9).all()
     return render_template('index.html', songs=songs)
 
 @main_bp.route('/add-disk', methods=['GET', 'POST'])

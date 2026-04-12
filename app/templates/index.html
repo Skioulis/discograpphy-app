@@ -1,13 +1,40 @@
 {% extends 'base.html' %}
 {% block title %} THE MAIN PAGE {% endblock %}
 {% block body %}
-    <h1>MAIN PAGE</h1>
-    <h2>Recent Songs</h2>
-    <ul>
+    <h1 class="mb-4 text-center">Random Songs</h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for song in songs %}
-            <li>{{ song.title }}</li>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">{{ song.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {% set singers = [] %}
+                            {% for ps in song.people %}
+                                {% if ps.isSinger %}
+                                    {% set singers = singers + [ps.person.name] %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if singers %}
+                                Singer: {{ singers|join(', ') }}
+                            {% else %}
+                                Unknown Artist
+                            {% endif %}
+                        </h6>
+                        <p class="card-text">
+                            {% if song.notes %}
+                                <small class="text-truncate d-block" style="max-width: 100%;">{{ song.notes }}</small>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}
 
 {% block scripts %}{% endblock %}
