@@ -26,5 +26,20 @@ class Song(db.Model, TimestampMixin):
     people: so.Mapped[List['PeopleSong']] = so.relationship(back_populates='song')
 
     def __repr__(self):
-        return f'<Song {self.title}>'
-    
+        people_details = []
+        for ps in self.people:
+            roles = []
+            if ps.isComposer:
+                roles.append('Composer')
+            if ps.isSongwriter:
+                roles.append('Writer')
+            if ps.isSinger:
+                roles.append('Singer')
+            if ps.isMusician:
+                roles.append('Musician')
+
+            role_str = ', '.join(roles) if roles else 'No roles'
+            people_details.append(f"{ps.person.name}: {role_str}")
+
+        people_str = '; '.join(people_details) if people_details else 'No people'
+        return f'<Song {self.title} ({people_str})>'

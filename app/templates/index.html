@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} THE MAIN PAGE {% endblock %}
+{% block title %} Η συλλογή του Σάκη {% endblock %}
 {% block body %}
     <h1 class="mb-4 text-center">Random Songs</h1>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -8,20 +8,35 @@
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary">{{ song.title }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            {% set singers = [] %}
+                        <h6 class="card-subtitle mb-2 text-muted">Συντελεστές</h6>
+                        <ul class="list-unstyled text-muted small mb-2">
                             {% for ps in song.people %}
-                                {% if ps.isSinger %}
-                                    {% set singers = singers + [ps.person.name] %}
+                                {% set roles = [] %}
+                                {% if ps.isComposer %}
+                                    {% set roles = roles + ['Composer'] %}
                                 {% endif %}
-                            {% endfor %}
-                            
-                            {% if singers %}
-                                Singer: {{ singers|join(', ') }}
+                                {% if ps.isSongwriter %}
+                                    {% set roles = roles + ['Writer'] %}
+                                {% endif %}
+                                {% if ps.isSinger %}
+                                    {% set roles = roles + ['Singer'] %}
+                                {% endif %}
+                                {% if ps.isMusician %}
+                                    {% set roles = roles + ['Musician'] %}
+                                {% endif %}
+
+                                <li>
+                                    <strong>{{ ps.person.name }}</strong>
+                                    {% if roles %}
+                                        : {{ roles|join(', ') }}
+                                    {% else %}
+                                        : No roles
+                                    {% endif %}
+                                </li>
                             {% else %}
-                                Unknown Artist
-                            {% endif %}
-                        </h6>
+                                <li>Unknown Artist</li>
+                            {% endfor %}
+                        </ul>
                         <p class="card-text">
                             {% if song.notes %}
                                 <small class="text-truncate d-block" style="max-width: 100%;">{{ song.notes }}</small>
