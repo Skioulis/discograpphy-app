@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from sqlalchemy import func
 
-from models import Person
 from .models.Song import Song
 from .models.Lyric import Lyric
 from .models.associations import PeopleSong
@@ -19,6 +18,42 @@ from .forms.song_form import SongForm
 
 
 main_bp = Blueprint('main', __name__)
+
+
+def _load_song_with_details(song_id):
+    return Song.query.options(
+        db.joinedload(Song.people).joinedload(PeopleSong.person),
+        db.joinedload(Song.lyrics),
+        db.joinedload(Song.disks)
+    ).filter(Song.song_id == song_id).first_or_404()
+
+
+def _build_single_song_form(song):
+    form = SongForm(obj=song)
+
+    disks = Disk.query.order_by(Disk.name).all()
+    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
+
+    form.title.data = song.title
+    form.notes.data = song.notes or ''
+    form.lyrics.data = '\n\n'.join(lyric.lyric for lyric in song.lyrics)
+    form.disk_id.data = song.disks[0].disk_id if song.disks else 0
+
+    while len(form.persons) > 0:
+        form.persons.pop_entry()
+
+    if song.people:
+        for ps in song.people:
+            person_form = form.persons.append_entry()
+            person_form.form.person_name.data = ps.person.name
+            person_form.form.isSinger.data = ps.isSinger
+            person_form.form.isComposer.data = ps.isComposer
+            person_form.form.isSongwriter.data = ps.isSongwriter
+            person_form.form.isMusician.data = ps.isMusician
+    else:
+        form.persons.append_entry()
+
+    return form
 
 @main_bp.route('/')
 def home():
@@ -149,4 +184,92 @@ def add_song():
         flash('Song added successfully!')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_song.html', form=form, all_persons=all_persons)
+
+
+@main_bp.route('/songs/<int:song_id>')
+def single_song(song_id):
+    song = _load_song_with_details(song_id)
+    form = _build_single_song_form(song)
+    all_persons = Person.query.order_by(Person.name).all()
+    return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, edit_mode=False)
+
+
+@main_bp.route('/songs/<int:song_id>/save', methods=['POST'])
+def save_song(song_id):
+    song = _load_song_with_details(song_id)
+    form = SongForm()
+    disks = Disk.query.order_by(Disk.name).all()
+    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
+    all_persons = Person.query.order_by(Person.name).all()
+
+    if not form.validate_on_submit():
+        return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, edit_mode=True), 400
+
+    song.title = form.title.data
+    song.notes = form.notes.data
+
+    song.disks.clear()
+    if form.disk_id.data and form.disk_id.data != 0:
+        disk = Disk.query.get(form.disk_id.data)
+        if disk:
+            song.disks.append(disk)
+
+    song.lyrics.clear()
+    if form.lyrics.data and form.lyrics.data.strip():
+        song.lyrics.append(Lyric(lyric=form.lyrics.data.strip()))
+
+    PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
+
+    merged_people = {}
+    for p_form in form.persons:
+        person_name = (p_form.person_name.data or '').strip()
+        if not person_name:
+            continue
+
+        person = Person.query.filter_by(name=person_name).first()
+        if not person:
+            person = Person(name=person_name)
+            db.session.add(person)
+            db.session.flush()
+
+        person_roles = merged_people.get(person.person_id)
+        if person_roles:
+            person_roles['isSinger'] = person_roles['isSinger'] or bool(p_form.isSinger.data)
+            person_roles['isComposer'] = person_roles['isComposer'] or bool(p_form.isComposer.data)
+            person_roles['isSongwriter'] = person_roles['isSongwriter'] or bool(p_form.isSongwriter.data)
+            person_roles['isMusician'] = person_roles['isMusician'] or bool(p_form.isMusician.data)
+        else:
+            merged_people[person.person_id] = {
+                'isSinger': bool(p_form.isSinger.data),
+                'isComposer': bool(p_form.isComposer.data),
+                'isSongwriter': bool(p_form.isSongwriter.data),
+                'isMusician': bool(p_form.isMusician.data)
+            }
+
+    for person_id, roles in merged_people.items():
+        db.session.add(PeopleSong(
+            person_id=person_id,
+            song_id=song.song_id,
+            isSinger=roles['isSinger'],
+            isComposer=roles['isComposer'],
+            isSongwriter=roles['isSongwriter'],
+            isMusician=roles['isMusician']
+        ))
+
+    db.session.commit()
+    flash('Song updated successfully!')
+    return redirect(url_for('main.single_song', song_id=song.song_id))
+
+
+@main_bp.route('/songs/<int:song_id>/delete', methods=['POST'])
+def delete_song(song_id):
+    song = Song.query.get_or_404(song_id)
+
+    PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
+    song.disks.clear()
+    db.session.delete(song)
+    db.session.commit()
+
+    flash('Song deleted successfully!')
+    return redirect(url_for('main.home'))
 
