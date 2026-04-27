@@ -23,12 +23,12 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 def home():
     songs = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).order_by(func.random()).limit(9).all()
-    testsong = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).filter(
-        Song.song_id == 2).first()
-    print(testsong)
-    for person in testsong.people:
-
-        print(person.person_id)
+    # testsong = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).filter(
+    #     Song.song_id == 2).first()
+    # print(testsong)
+    # for person in testsong.people:
+    #
+    #     print(person.person_id)
 
     return render_template('index.html', songs=songs)
 
