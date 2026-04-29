@@ -20,13 +20,19 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form.disk_id.label(class="form-label") }}
-                            {{ form.disk_id(class="form-select" + (" is-invalid" if form.disk_id.errors else "")) }}
-                            {% for error in form.disk_id.errors %}
+                            {{ form.disk_name.label(class="form-label") }}
+                            {{ form.disk_name(class="form-control" + (" is-invalid" if form.disk_name.errors else ""), list="disks-datalist", placeholder="Search available disks...") }}
+                            {% for error in form.disk_name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
                             <div class="form-text">Optional: Link this song to a disk now.</div>
                         </div>
+
+                        <datalist id="disks-datalist">
+                            {% for disk in all_disks %}
+                            <option value="{{ disk.name }}">
+                            {% endfor %}
+                        </datalist>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Persons & Roles</label>

@@ -31,13 +31,10 @@ def _load_song_with_details(song_id):
 def _build_single_song_form(song):
     form = SongForm(obj=song)
 
-    disks = Disk.query.order_by(Disk.name).all()
-    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
-
     form.title.data = song.title
     form.notes.data = song.notes or ''
     form.lyrics.data = '\n\n'.join(lyric.lyric for lyric in song.lyrics)
-    form.disk_id.data = song.disks[0].disk_id if song.disks else 0
+    form.disk_name.data = song.disks[0].name if song.disks else ''
 
     while len(form.persons) > 0:
         form.persons.pop_entry()
@@ -138,13 +135,19 @@ def add_person():
 @main_bp.route('/add-song', methods=['GET', 'POST'])
 def add_song():
     form = SongForm()
-    # Populate disk choices
-    disks = Disk.query.order_by(Disk.name).all()
-    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
+    all_disks = Disk.query.order_by(Disk.name).all()
 
     all_persons = Person.query.order_by(Person.name).all()
 
     if form.validate_on_submit():
+        disk_name = (form.disk_name.data or '').strip()
+        selected_disk = None
+        if disk_name:
+            selected_disk = Disk.query.filter(func.lower(Disk.name) == disk_name.lower()).first()
+            if not selected_disk:
+                form.disk_name.errors.append('Please select an available disk.')
+                return render_template('add_pages/add_song.html', form=form, all_persons=all_persons, all_disks=all_disks), 400
+
         new_song = Song(
             title=form.title.data,
             notes=form.notes.data
@@ -155,10 +158,8 @@ def add_song():
             new_song.lyrics.append(Lyric(lyric=form.lyrics.data))
         
         # Link to disk if selected
-        if form.disk_id.data and form.disk_id.data != 0:
-            disk = Disk.query.get(form.disk_id.data)
-            if disk:
-                new_song.disks.append(disk)
+        if selected_disk:
+            new_song.disks.append(selected_disk)
 
         # Process persons
         for p_form in form.persons:
@@ -183,7 +184,7 @@ def add_song():
         db.session.commit()
         flash('Song added successfully!')
         return redirect(url_for('main.home'))
-    return render_template('add_pages/add_song.html', form=form, all_persons=all_persons)
+    return render_template('add_pages/add_song.html', form=form, all_persons=all_persons, all_disks=all_disks)
 
 
 @main_bp.route('/songs/<int:song_id>')
@@ -191,28 +192,34 @@ def single_song(song_id):
     song = _load_song_with_details(song_id)
     form = _build_single_song_form(song)
     all_persons = Person.query.order_by(Person.name).all()
-    return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, edit_mode=False)
+    all_disks = Disk.query.order_by(Disk.name).all()
+    return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, all_disks=all_disks, edit_mode=False)
 
 
 @main_bp.route('/songs/<int:song_id>/save', methods=['POST'])
 def save_song(song_id):
     song = _load_song_with_details(song_id)
     form = SongForm()
-    disks = Disk.query.order_by(Disk.name).all()
-    form.disk_id.choices = [(0, '-- None --')] + [(d.disk_id, d.name) for d in disks]
+    all_disks = Disk.query.order_by(Disk.name).all()
     all_persons = Person.query.order_by(Person.name).all()
 
     if not form.validate_on_submit():
-        return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, edit_mode=True), 400
+        return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, all_disks=all_disks, edit_mode=True), 400
+
+    disk_name = (form.disk_name.data or '').strip()
+    selected_disk = None
+    if disk_name:
+        selected_disk = Disk.query.filter(func.lower(Disk.name) == disk_name.lower()).first()
+        if not selected_disk:
+            form.disk_name.errors.append('Please select an available disk.')
+            return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, all_disks=all_disks, edit_mode=True), 400
 
     song.title = form.title.data
     song.notes = form.notes.data
 
     song.disks.clear()
-    if form.disk_id.data and form.disk_id.data != 0:
-        disk = Disk.query.get(form.disk_id.data)
-        if disk:
-            song.disks.append(disk)
+    if selected_disk:
+        song.disks.append(selected_disk)
 
     song.lyrics.clear()
     if form.lyrics.data and form.lyrics.data.strip():

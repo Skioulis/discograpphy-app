@@ -26,10 +26,19 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form.disk_id.label(class="form-label") }}
-                            {{ form.disk_id(class="form-select editable-field", disabled=True) }}
+                            {{ form.disk_name.label(class="form-label") }}
+                            {{ form.disk_name(class="form-control editable-field" + (" is-invalid" if form.disk_name.errors else ""), list="disks-datalist", disabled=True) }}
+                            {% for error in form.disk_name.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
                             <div class="form-text">Optional: Link this song to a disk now.</div>
                         </div>
+
+                        <datalist id="disks-datalist">
+                            {% for disk in all_disks %}
+                            <option value="{{ disk.name }}">
+                            {% endfor %}
+                        </datalist>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Persons &amp; Roles</label>
@@ -39,9 +48,10 @@
                                         <tr>
                                             <th scope="col">Person</th>
                                             <th scope="col">Roles</th>
+                                            <th scope="col" style="width: 110px;">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="persons-tbody">
                                         {% for person_form in form.persons %}
                                         <tr class="person-row">
                                             <td>
@@ -66,6 +76,14 @@
                                                         {{ person_form.isMusician.label(class="form-check-label") }}
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Add person row below">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Delete person row">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -111,12 +129,71 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const editModeToggle = document.getElementById('edit-mode-toggle');
-    const editableFields = document.querySelectorAll('.editable-field');
     const editActions = document.getElementById('edit-actions');
+    const personsTbody = document.getElementById('persons-tbody');
+
+    function buildPersonRow(index) {
+        return `
+            <tr class="person-row">
+                <td>
+                    <input class="form-control editable-field" id="persons-${index}-person_name" list="persons-datalist" name="persons-${index}-person_name" type="text" value="" disabled>
+                </td>
+                <td>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input editable-field" id="persons-${index}-isSinger" name="persons-${index}-isSinger" type="checkbox" value="y" disabled>
+                            <label class="form-check-label" for="persons-${index}-isSinger">Singer</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input editable-field" id="persons-${index}-isComposer" name="persons-${index}-isComposer" type="checkbox" value="y" disabled>
+                            <label class="form-check-label" for="persons-${index}-isComposer">Composer</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input editable-field" id="persons-${index}-isSongwriter" name="persons-${index}-isSongwriter" type="checkbox" value="y" disabled>
+                            <label class="form-check-label" for="persons-${index}-isSongwriter">Songwriter</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input editable-field" id="persons-${index}-isMusician" name="persons-${index}-isMusician" type="checkbox" value="y" disabled>
+                            <label class="form-check-label" for="persons-${index}-isMusician">Musician</label>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control d-none" aria-label="Add person row below">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control d-none" aria-label="Delete person row">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+
+    function getNextPersonIndex() {
+        let maxIndex = -1;
+        personsTbody.querySelectorAll('input[name$="-person_name"]').forEach(function (input) {
+            const match = input.name.match(/^persons-(\d+)-person_name$/);
+            if (!match) {
+                return;
+            }
+
+            const index = parseInt(match[1], 10);
+            if (!Number.isNaN(index) && index > maxIndex) {
+                maxIndex = index;
+            }
+        });
+
+        return maxIndex + 1;
+    }
 
     function setEditMode(enabled) {
-        editableFields.forEach(function (field) {
+        document.querySelectorAll('.editable-field').forEach(function (field) {
             field.disabled = !enabled;
+        });
+
+        document.querySelectorAll('.edit-only-control').forEach(function (control) {
+            control.classList.toggle('d-none', !enabled);
         });
 
         if (enabled) {
@@ -125,6 +202,23 @@ document.addEventListener('DOMContentLoaded', function () {
             editActions.classList.add('d-none');
         }
     }
+
+    personsTbody.addEventListener('click', function (event) {
+        const addButton = event.target.closest('.add-person-row-btn');
+        if (addButton && editModeToggle.checked) {
+            const currentRow = addButton.closest('.person-row');
+            currentRow?.insertAdjacentHTML('afterend', buildPersonRow(getNextPersonIndex()));
+            setEditMode(editModeToggle.checked);
+            return;
+        }
+
+        const removeButton = event.target.closest('.remove-person-row-btn');
+        if (!removeButton || !editModeToggle.checked) {
+            return;
+        }
+
+        removeButton.closest('.person-row')?.remove();
+    });
 
     setEditMode(editModeToggle.checked);
 
