@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db, TimestampMixin
@@ -6,12 +6,15 @@ from .db import db, TimestampMixin
 if TYPE_CHECKING:
     from .Song import Song
 
+
 class Lyric(db.Model, TimestampMixin):
     __tablename__ = 'lyrics'
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    lyric: so.Mapped[str] = so.mapped_column(sa.Text)
-    song_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('songs.song_id'), index=True)
+    text: so.Mapped[str] = so.mapped_column(sa.Text)
+    song_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey('songs.song_id'), index=True
+    )
 
     song: so.Mapped['Song'] = so.relationship(back_populates='lyrics')
 

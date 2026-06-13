@@ -5,6 +5,7 @@ import sqlalchemy.orm as so
 
 db = SQLAlchemy()
 
+
 class TimestampMixin:
     created_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=lambda: datetime.now(timezone.utc)
@@ -12,5 +13,5 @@ class TimestampMixin:
     updated_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime,
         default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        onupdate=lambda: datetime.now(timezone.utc),
     )
