@@ -1,27 +1,10 @@
 {% extends 'base.html' %}
+{% import 'partials/_list_macros.html' as listm %}
 {% block title %} Songs {% endblock %}
 {% block body %}
     <h1 class="mb-4 text-center">Songs</h1>
 
-    <form method="GET" action="{{ url_for('main.songs_list') }}" class="row g-2 justify-content-end align-items-end mb-4">
-        <div class="col-auto">
-            <label for="sort" class="form-label mb-0 small text-muted">Order by</label>
-            <select id="sort" name="sort" class="form-select" onchange="this.form.submit()">
-                {% for value, (label, _) in sort_options.items() %}
-                    <option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-auto">
-            <label for="per_page" class="form-label mb-0 small text-muted">Per page</label>
-            <select id="per_page" name="per_page" class="form-select" onchange="this.form.submit()">
-                {% for choice in per_page_choices %}
-                    <option value="{{ choice }}" {% if choice == per_page %}selected{% endif %}>{{ choice }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <noscript><div class="col-auto"><button type="submit" class="btn btn-outline-success">Apply</button></div></noscript>
-    </form>
+    {{ listm.list_controls('main.songs_list', sort, per_page, sort_options, per_page_choices) }}
 
     {% if not songs %}
         <p class="text-center text-muted">No songs found.</p>
@@ -69,27 +52,7 @@
             {% endfor %}
         </div>
 
-        {% if pagination.pages > 1 %}
-            <nav aria-label="Songs pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('main.songs_list', page=pagination.prev_num, sort=sort, per_page=per_page) }}">Previous</a>
-                    </li>
-                    {% for p in pagination.iter_pages() %}
-                        {% if p %}
-                            <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                                <a class="page-link" href="{{ url_for('main.songs_list', page=p, sort=sort, per_page=per_page) }}">{{ p }}</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">…</span></li>
-                        {% endif %}
-                    {% endfor %}
-                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('main.songs_list', page=pagination.next_num, sort=sort, per_page=per_page) }}">Next</a>
-                    </li>
-                </ul>
-            </nav>
-        {% endif %}
+        {{ listm.pagination_nav('main.songs_list', pagination, sort, per_page) }}
     {% endif %}
 {% endblock %}
 

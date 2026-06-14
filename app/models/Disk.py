@@ -14,7 +14,7 @@ class Disk(db.Model, TimestampMixin):
 
     disk_id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(250), index=True)
-    size: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250), nullable=True)
+    size: so.Mapped[Optional[int]] = so.mapped_column(nullable=True)
     sakisid: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250), nullable=True)
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
 

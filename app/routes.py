@@ -76,159 +76,28 @@ def home():
 
     return render_template('index.html', songs=songs)
 
+PER_PAGE_CHOICES = [10, 20, 50, 100]
+
 SONG_SORT_OPTIONS = {
     'updated': ('Recently updated', lambda: Song.updated_at.desc()),
     'name': ('Name (A–Z)', lambda: Song.title.asc()),
     'oldest_updated': ('Least recently updated', lambda: Song.updated_at.asc()),
 }
-PER_PAGE_CHOICES = [10, 20, 50, 100]
-
-
-@main_bp.route('/songs')
-def songs_list():
-    sort = request.args.get('sort', 'updated')
-    if sort not in SONG_SORT_OPTIONS:
-        sort = 'updated'
-
-    try:
-        per_page = int(request.args.get('per_page', 10))
-    except (TypeError, ValueError):
-        per_page = 10
-    if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
-
-    page = request.args.get('page', 1, type=int)
-
-    pagination = Song.query.options(
-        db.selectinload(Song.people).joinedload(PeopleSong.person)
-    ).order_by(SONG_SORT_OPTIONS[sort][1]()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    return render_template(
-        'songs_list.html',
-        pagination=pagination,
-        songs=pagination.items,
-        sort=sort,
-        per_page=per_page,
-        sort_options=SONG_SORT_OPTIONS,
-        per_page_choices=PER_PAGE_CHOICES,
-    )
-
-
 DISK_SORT_OPTIONS = {
     'updated': ('Recently updated', lambda: Disk.updated_at.desc()),
     'name': ('Name (A–Z)', lambda: Disk.name.asc()),
     'oldest_updated': ('Least recently updated', lambda: Disk.updated_at.asc()),
 }
-
-
-@main_bp.route('/disks')
-def disks_list():
-    sort = request.args.get('sort', 'updated')
-    if sort not in DISK_SORT_OPTIONS:
-        sort = 'updated'
-
-    try:
-        per_page = int(request.args.get('per_page', 10))
-    except (TypeError, ValueError):
-        per_page = 10
-    if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
-
-    page = request.args.get('page', 1, type=int)
-
-    pagination = Disk.query.options(
-        db.joinedload(Disk.company)
-    ).order_by(DISK_SORT_OPTIONS[sort][1]()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    return render_template(
-        'disks_list.html',
-        pagination=pagination,
-        disks=pagination.items,
-        sort=sort,
-        per_page=per_page,
-        sort_options=DISK_SORT_OPTIONS,
-        per_page_choices=PER_PAGE_CHOICES,
-    )
-
-
 PERSON_SORT_OPTIONS = {
     'updated': ('Recently updated', lambda: Person.updated_at.desc()),
     'name': ('Name (A–Z)', lambda: Person.name.asc()),
     'oldest_updated': ('Least recently updated', lambda: Person.updated_at.asc()),
 }
-
-
-@main_bp.route('/persons')
-def persons_list():
-    sort = request.args.get('sort', 'updated')
-    if sort not in PERSON_SORT_OPTIONS:
-        sort = 'updated'
-
-    try:
-        per_page = int(request.args.get('per_page', 10))
-    except (TypeError, ValueError):
-        per_page = 10
-    if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
-
-    page = request.args.get('page', 1, type=int)
-
-    pagination = Person.query.order_by(PERSON_SORT_OPTIONS[sort][1]()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    return render_template(
-        'persons_list.html',
-        pagination=pagination,
-        persons=pagination.items,
-        sort=sort,
-        per_page=per_page,
-        sort_options=PERSON_SORT_OPTIONS,
-        per_page_choices=PER_PAGE_CHOICES,
-    )
-
-
 COMPANY_SORT_OPTIONS = {
     'updated': ('Recently updated', lambda: Company.updated_at.desc()),
     'name': ('Name (A–Z)', lambda: Company.name.asc()),
     'oldest_updated': ('Least recently updated', lambda: Company.updated_at.asc()),
 }
-
-
-@main_bp.route('/companies')
-def companies_list():
-    sort = request.args.get('sort', 'updated')
-    if sort not in COMPANY_SORT_OPTIONS:
-        sort = 'updated'
-
-    try:
-        per_page = int(request.args.get('per_page', 10))
-    except (TypeError, ValueError):
-        per_page = 10
-    if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
-
-    page = request.args.get('page', 1, type=int)
-
-    pagination = Company.query.order_by(COMPANY_SORT_OPTIONS[sort][1]()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    return render_template(
-        'companies_list.html',
-        pagination=pagination,
-        companies=pagination.items,
-        sort=sort,
-        per_page=per_page,
-        sort_options=COMPANY_SORT_OPTIONS,
-        per_page_choices=PER_PAGE_CHOICES,
-    )
-
-
 DISK_LABEL_SORT_OPTIONS = {
     'updated': ('Recently updated', lambda: DiskLabel.updated_at.desc()),
     'name': ('Name (A–Z)', lambda: DiskLabel.label.asc()),
@@ -236,34 +105,76 @@ DISK_LABEL_SORT_OPTIONS = {
 }
 
 
-@main_bp.route('/disk-labels')
-def disk_labels_list():
-    sort = request.args.get('sort', 'updated')
-    if sort not in DISK_LABEL_SORT_OPTIONS:
-        sort = 'updated'
-
+def _resolve_per_page():
     try:
         per_page = int(request.args.get('per_page', 10))
     except (TypeError, ValueError):
         per_page = 10
-    if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
+    return per_page if per_page in PER_PAGE_CHOICES else 10
 
+
+def _paginate(query, sort_options):
+    """Apply the requested sort + pagination from query args to a base query."""
+    sort = request.args.get('sort', 'updated')
+    if sort not in sort_options:
+        sort = 'updated'
+    per_page = _resolve_per_page()
     page = request.args.get('page', 1, type=int)
-
-    pagination = DiskLabel.query.options(
-        db.joinedload(DiskLabel.company)
-    ).order_by(DISK_LABEL_SORT_OPTIONS[sort][1]()).paginate(
+    pagination = query.order_by(sort_options[sort][1]()).paginate(
         page=page, per_page=per_page, error_out=False
     )
+    return pagination, sort, per_page
 
+
+@main_bp.route('/songs')
+def songs_list():
+    query = Song.query.options(db.selectinload(Song.people).joinedload(PeopleSong.person))
+    pagination, sort, per_page = _paginate(query, SONG_SORT_OPTIONS)
     return render_template(
-        'disk_labels_list.html',
-        pagination=pagination,
-        labels=pagination.items,
-        sort=sort,
-        per_page=per_page,
-        sort_options=DISK_LABEL_SORT_OPTIONS,
+        'songs_list.html', pagination=pagination, songs=pagination.items,
+        sort=sort, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
+@main_bp.route('/disks')
+def disks_list():
+    query = Disk.query.options(db.joinedload(Disk.company))
+    pagination, sort, per_page = _paginate(query, DISK_SORT_OPTIONS)
+    return render_template(
+        'disks_list.html', pagination=pagination, disks=pagination.items,
+        sort=sort, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
+@main_bp.route('/persons')
+def persons_list():
+    pagination, sort, per_page = _paginate(Person.query, PERSON_SORT_OPTIONS)
+    return render_template(
+        'persons_list.html', pagination=pagination, persons=pagination.items,
+        sort=sort, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
+@main_bp.route('/companies')
+def companies_list():
+    pagination, sort, per_page = _paginate(Company.query, COMPANY_SORT_OPTIONS)
+    return render_template(
+        'companies_list.html', pagination=pagination, companies=pagination.items,
+        sort=sort, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
+@main_bp.route('/disk-labels')
+def disk_labels_list():
+    query = DiskLabel.query.options(db.joinedload(DiskLabel.company))
+    pagination, sort, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
+    return render_template(
+        'disk_labels_list.html', pagination=pagination, labels=pagination.items,
+        sort=sort, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
@@ -284,7 +195,7 @@ def add_disk():
         )
         db.session.add(new_disk)
         db.session.commit()
-        flash('Disk added successfully!')
+        flash('Disk added successfully!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_disk.html', form=form)
 
@@ -299,7 +210,7 @@ def add_company():
         )
         db.session.add(new_company)
         db.session.commit()
-        flash('Company added successfully!')
+        flash('Company added successfully!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_company.html', form=form)
 
@@ -316,7 +227,7 @@ def add_disk_label():
         )
         db.session.add(new_label)
         db.session.commit()
-        flash('Disk Label added successfully!')
+        flash('Disk Label added successfully!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_disk_label.html', form=form)
 
@@ -331,7 +242,7 @@ def add_person():
         )
         db.session.add(new_person)
         db.session.commit()
-        flash('Person added successfully!')
+        flash('Person added successfully!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_person.html', form=form)
 
@@ -386,7 +297,7 @@ def add_song():
 
         db.session.add(new_song)
         db.session.commit()
-        flash('Song added successfully!')
+        flash('Song added successfully!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_song.html', form=form, all_persons=all_persons, all_disks=all_disks)
 
@@ -469,7 +380,7 @@ def save_song(song_id):
         ))
 
     db.session.commit()
-    flash('Song updated successfully!')
+    flash('Song updated successfully!', 'success')
     return redirect(url_for('main.single_song', song_id=song.song_id))
 
 
@@ -482,7 +393,7 @@ def delete_song(song_id):
     db.session.delete(song)
     db.session.commit()
 
-    flash('Song deleted successfully!')
+    flash('Song deleted successfully!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -503,7 +414,7 @@ def single_disk(disk_id):
     form = DiskForm(obj=disk)
     form.company_id.choices = _company_choices()
     form.company_id.data = disk.company_id
-    form.labels_size.data = int(disk.size) if disk.size and disk.size.isdigit() else 45
+    form.labels_size.data = disk.size if disk.size else 45
     edit_mode = request.args.get('edit') == '1'
     return render_template('single_pages/single_disk.html', disk=disk, form=form, edit_mode=edit_mode)
 
@@ -520,11 +431,11 @@ def save_disk(disk_id):
 
     disk.name = form.name.data
     disk.company_id = form.company_id.data
-    disk.size = str(form.labels_size.data) if form.labels_size.data else None
+    disk.size = form.labels_size.data or None
     disk.sakisid = form.sakisid.data
     disk.notes = form.notes.data
     db.session.commit()
-    flash('Disk updated successfully!')
+    flash('Disk updated successfully!', 'success')
     return redirect(url_for('main.single_disk', disk_id=disk.disk_id))
 
 
@@ -534,7 +445,7 @@ def delete_disk(disk_id):
     disk.songs.clear()
     db.session.delete(disk)
     db.session.commit()
-    flash('Disk deleted successfully!')
+    flash('Disk deleted successfully!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -564,7 +475,7 @@ def save_person(person_id):
     person.name = form.name.data
     person.notes = form.notes.data
     db.session.commit()
-    flash('Person updated successfully!')
+    flash('Person updated successfully!', 'success')
     return redirect(url_for('main.single_person', person_id=person.person_id))
 
 
@@ -574,7 +485,7 @@ def delete_person(person_id):
     PeopleSong.query.filter_by(person_id=person.person_id).delete(synchronize_session=False)
     db.session.delete(person)
     db.session.commit()
-    flash('Person deleted successfully!')
+    flash('Person deleted successfully!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -607,7 +518,7 @@ def save_company(company_id):
     company.labels_size = form.labels_size.data
     company.info = form.info.data
     db.session.commit()
-    flash('Company updated successfully!')
+    flash('Company updated successfully!', 'success')
     return redirect(url_for('main.single_company', company_id=company.company_id))
 
 
@@ -615,12 +526,12 @@ def save_company(company_id):
 def delete_company(company_id):
     company = _load_company(company_id)
     if company.disks or company.labels:
-        flash('Cannot delete a company that still has disks or labels linked to it.')
+        flash('Cannot delete a company that still has disks or labels linked to it.', 'warning')
         return redirect(url_for('main.single_company', company_id=company.company_id))
 
     db.session.delete(company)
     db.session.commit()
-    flash('Company deleted successfully!')
+    flash('Company deleted successfully!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -652,7 +563,7 @@ def save_disk_label(label_id):
     label.label = form.label.data
     label.company_id = form.company_id.data
     db.session.commit()
-    flash('Disk Label updated successfully!')
+    flash('Disk Label updated successfully!', 'success')
     return redirect(url_for('main.single_disk_label', label_id=label.label_id))
 
 
@@ -661,7 +572,7 @@ def delete_disk_label(label_id):
     label = DiskLabel.query.get_or_404(label_id)
     db.session.delete(label)
     db.session.commit()
-    flash('Disk Label deleted successfully!')
+    flash('Disk Label deleted successfully!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -670,32 +581,38 @@ def delete_disk_label(label_id):
 SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies', 'disk_labels']
 
 
+# Number of per-category results shown when searching 'everything'.
+SEARCH_PREVIEW = 5
+
+
 def _search_songs(term):
     return Song.query.filter(
         or_(Song.title.ilike(term), Song.notes.ilike(term))
-    ).order_by(Song.title).all()
+    ).order_by(Song.title)
 
 
 def _search_disks(term):
-    return Disk.query.filter(
+    return Disk.query.options(db.joinedload(Disk.company)).filter(
         or_(Disk.name.ilike(term), Disk.notes.ilike(term), Disk.sakisid.ilike(term))
-    ).order_by(Disk.name).all()
+    ).order_by(Disk.name)
 
 
 def _search_persons(term):
     return Person.query.filter(
         or_(Person.name.ilike(term), Person.notes.ilike(term))
-    ).order_by(Person.name).all()
+    ).order_by(Person.name)
 
 
 def _search_companies(term):
     return Company.query.filter(
         or_(Company.name.ilike(term), Company.info.ilike(term))
-    ).order_by(Company.name).all()
+    ).order_by(Company.name)
 
 
 def _search_disk_labels(term):
-    return DiskLabel.query.filter(DiskLabel.label.ilike(term)).order_by(DiskLabel.label).all()
+    return DiskLabel.query.options(db.joinedload(DiskLabel.company)).filter(
+        DiskLabel.label.ilike(term)
+    ).order_by(DiskLabel.label)
 
 
 _SEARCHERS = {
@@ -716,13 +633,25 @@ def search():
 
     results = {}
     total = 0
+    pagination = None
+    per_page = _resolve_per_page()
+
     if query:
         term = f'%{query}%'
-        categories = SEARCH_CATEGORIES if search_type == 'everything' else [search_type]
-        for category in categories:
-            found = _SEARCHERS[category](term)
-            results[category] = found
-            total += len(found)
+        if search_type == 'everything':
+            # Show a capped preview per category, each with a "view all" link.
+            for category in SEARCH_CATEGORIES:
+                q = _SEARCHERS[category](term)
+                count = q.count()
+                total += count
+                results[category] = {'items': q.limit(SEARCH_PREVIEW).all(), 'count': count}
+        else:
+            page = request.args.get('page', 1, type=int)
+            pagination = _SEARCHERS[search_type](term).paginate(
+                page=page, per_page=per_page, error_out=False
+            )
+            total = pagination.total
+            results[search_type] = {'items': pagination.items, 'count': pagination.total}
 
     return render_template(
         'search_results.html',
@@ -730,5 +659,9 @@ def search():
         search_type=search_type,
         results=results,
         total=total,
+        pagination=pagination,
+        per_page=per_page,
+        per_page_choices=PER_PAGE_CHOICES,
+        preview=SEARCH_PREVIEW,
     )
 
