@@ -416,6 +416,46 @@ def delete_company(company_id):
     return redirect(url_for('main.home'))
 
 
+def _load_disk_label(label_id):
+    return DiskLabel.query.options(
+        db.joinedload(DiskLabel.company)
+    ).filter(DiskLabel.label_id == label_id).first_or_404()
+
+
+@main_bp.route('/disk-labels/<int:label_id>')
+def single_disk_label(label_id):
+    label = _load_disk_label(label_id)
+    form = DiskLabelForm(obj=label)
+    form.company_id.choices = _company_choices()
+    form.company_id.data = label.company_id
+    return render_template('single_pages/single_disk_label.html', label=label, form=form, edit_mode=False)
+
+
+@main_bp.route('/disk-labels/<int:label_id>/save', methods=['POST'])
+def save_disk_label(label_id):
+    label = _load_disk_label(label_id)
+    form = DiskLabelForm()
+    form.company_id.choices = _company_choices()
+
+    if not form.validate_on_submit():
+        return render_template('single_pages/single_disk_label.html', label=label, form=form, edit_mode=True), 400
+
+    label.label = form.label.data
+    label.company_id = form.company_id.data
+    db.session.commit()
+    flash('Disk Label updated successfully!')
+    return redirect(url_for('main.single_disk_label', label_id=label.label_id))
+
+
+@main_bp.route('/disk-labels/<int:label_id>/delete', methods=['POST'])
+def delete_disk_label(label_id):
+    label = DiskLabel.query.get_or_404(label_id)
+    db.session.delete(label)
+    db.session.commit()
+    flash('Disk Label deleted successfully!')
+    return redirect(url_for('main.home'))
+
+
 # Search categories: maps the dropdown value to a human label. 'everything'
 # searches all of them.
 SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies']

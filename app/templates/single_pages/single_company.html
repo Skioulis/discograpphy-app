@@ -52,7 +52,10 @@
                     {% if company.labels %}
                         <ul class="list-group mb-3">
                             {% for label in company.labels %}
-                                <li class="list-group-item">{{ label.label }}</li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ label.label }}
+                                    <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </li>
                             {% endfor %}
                         </ul>
                     {% else %}
