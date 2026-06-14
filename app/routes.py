@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from sqlalchemy import func, or_
 
@@ -18,6 +20,16 @@ from .forms.song_form import SongForm
 
 
 main_bp = Blueprint('main', __name__)
+
+
+def _safe_redirect(default_endpoint):
+    """Redirect to the posted 'next' target if it is a local path, else fall back."""
+    target = request.form.get('next')
+    if target:
+        parsed = urlparse(target)
+        if not parsed.netloc and not parsed.scheme and target.startswith('/'):
+            return redirect(target)
+    return redirect(url_for(default_endpoint))
 
 
 def _load_song_with_details(song_id):
@@ -385,7 +397,8 @@ def single_song(song_id):
     form = _build_single_song_form(song)
     all_persons = Person.query.order_by(Person.name).all()
     all_disks = Disk.query.order_by(Disk.name).all()
-    return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, all_disks=all_disks, edit_mode=False)
+    edit_mode = request.args.get('edit') == '1'
+    return render_template('single_pages/single_song.html', song=song, form=form, all_persons=all_persons, all_disks=all_disks, edit_mode=edit_mode)
 
 
 @main_bp.route('/songs/<int:song_id>/save', methods=['POST'])
@@ -470,7 +483,7 @@ def delete_song(song_id):
     db.session.commit()
 
     flash('Song deleted successfully!')
-    return redirect(url_for('main.home'))
+    return _safe_redirect('main.home')
 
 
 def _company_choices():
