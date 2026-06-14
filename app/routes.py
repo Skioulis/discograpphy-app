@@ -588,33 +588,41 @@ SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies', 'disk_labels']
 SEARCH_PREVIEW = 5
 
 
+def _like_term(query):
+    """Build a contains-match term, escaping LIKE wildcards so user-typed
+    '%', '_' or '\\' are matched literally rather than as wildcards."""
+    escaped = query.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+    return f'%{escaped}%'
+
+
 def _search_songs(term):
     return Song.query.filter(
-        or_(Song.title.ilike(term), Song.notes.ilike(term))
+        or_(Song.title.ilike(term, escape='\\'), Song.notes.ilike(term, escape='\\'))
     ).order_by(Song.title)
 
 
 def _search_disks(term):
     return Disk.query.options(db.joinedload(Disk.company)).filter(
-        or_(Disk.name.ilike(term), Disk.notes.ilike(term), Disk.sakisid.ilike(term))
+        or_(Disk.name.ilike(term, escape='\\'), Disk.notes.ilike(term, escape='\\'),
+            Disk.sakisid.ilike(term, escape='\\'))
     ).order_by(Disk.name)
 
 
 def _search_persons(term):
     return Person.query.filter(
-        or_(Person.name.ilike(term), Person.notes.ilike(term))
+        or_(Person.name.ilike(term, escape='\\'), Person.notes.ilike(term, escape='\\'))
     ).order_by(Person.name)
 
 
 def _search_companies(term):
     return Company.query.filter(
-        or_(Company.name.ilike(term), Company.info.ilike(term))
+        or_(Company.name.ilike(term, escape='\\'), Company.info.ilike(term, escape='\\'))
     ).order_by(Company.name)
 
 
 def _search_disk_labels(term):
     return DiskLabel.query.options(db.joinedload(DiskLabel.company)).filter(
-        DiskLabel.label.ilike(term)
+        DiskLabel.label.ilike(term, escape='\\')
     ).order_by(DiskLabel.label)
 
 
@@ -640,7 +648,7 @@ def search():
     per_page = _resolve_per_page()
 
     if query:
-        term = f'%{query}%'
+        term = _like_term(query)
         if search_type == 'everything':
             # Show a capped preview per category, each with a "view all" link.
             for category in SEARCH_CATEGORIES:

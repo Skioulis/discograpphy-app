@@ -203,6 +203,34 @@ class RoutesTestCase(unittest.TestCase):
                              follow_redirects=True)
         self.assertIn(b'alert-success', r.data)
 
+    # ---- search wildcard escaping ----
+    def test_search_escapes_like_wildcards(self):
+        with self.app.app_context():
+            db.session.add_all([Person(name='100% Pure'), Person(name='1000 Songs')])
+            db.session.commit()
+        # '%' must be matched literally, so only '100% Pure' should appear.
+        r = self.client.get('/search?q=100%25&type=persons')  # %25 = '%'
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'100% Pure', r.data)
+        self.assertNotIn(b'1000 Songs', r.data)
+
+    # ---- error pages ----
+    def test_404_page(self):
+        r = self.client.get('/songs/999999')
+        self.assertEqual(r.status_code, 404)
+        self.assertIn(b'Page not found', r.data)
+
+
+class ConfigSelectionTests(unittest.TestCase):
+    def test_get_config_by_name(self):
+        from config import get_config, DevelopmentConfig, ProductionConfig
+        self.assertIs(get_config('development'), DevelopmentConfig)
+        self.assertIs(get_config('production'), ProductionConfig)
+
+    def test_get_config_unknown_defaults_to_development(self):
+        from config import get_config, DevelopmentConfig
+        self.assertIs(get_config('nonsense'), DevelopmentConfig)
+
 
 if __name__ == '__main__':
     unittest.main()
