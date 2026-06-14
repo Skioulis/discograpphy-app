@@ -37,10 +37,13 @@
             <h3 class="mt-4">Disks <span class="badge bg-secondary">{{ disks|length }}</span></h3>
             <ul class="list-group mb-4">
                 {% for disk in disks %}
-                    <li class="list-group-item">
-                        <strong>{{ disk.name }}</strong>
-                        {% if disk.size %}<span class="text-muted"> — {{ disk.size }}</span>{% endif %}
-                        {% if disk.notes %}<small class="text-muted d-block">{{ disk.notes }}</small>{% endif %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ disk.name }}</strong>
+                            {% if disk.size %}<span class="text-muted"> — {{ disk.size }}</span>{% endif %}
+                            {% if disk.notes %}<small class="text-muted d-block">{{ disk.notes }}</small>{% endif %}
+                        </div>
+                        <a href="{{ url_for('main.single_disk', disk_id=disk.disk_id) }}" class="btn btn-sm btn-outline-primary">View</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -51,9 +54,12 @@
             <h3 class="mt-4">Persons <span class="badge bg-secondary">{{ persons|length }}</span></h3>
             <ul class="list-group mb-4">
                 {% for person in persons %}
-                    <li class="list-group-item">
-                        <strong>{{ person.name }}</strong>
-                        {% if person.notes %}<small class="text-muted d-block">{{ person.notes }}</small>{% endif %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ person.name }}</strong>
+                            {% if person.notes %}<small class="text-muted d-block">{{ person.notes }}</small>{% endif %}
+                        </div>
+                        <a href="{{ url_for('main.single_person', person_id=person.person_id) }}" class="btn btn-sm btn-outline-primary">View</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -64,10 +70,13 @@
             <h3 class="mt-4">Companies <span class="badge bg-secondary">{{ companies|length }}</span></h3>
             <ul class="list-group mb-4">
                 {% for company in companies %}
-                    <li class="list-group-item">
-                        <strong>{{ company.name }}</strong>
-                        {% if company.labels_size %}<span class="text-muted"> — {{ company.labels_size }}</span>{% endif %}
-                        {% if company.info %}<small class="text-muted d-block">{{ company.info }}</small>{% endif %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ company.name }}</strong>
+                            {% if company.labels_size %}<span class="text-muted"> — {{ company.labels_size }}</span>{% endif %}
+                            {% if company.info %}<small class="text-muted d-block">{{ company.info }}</small>{% endif %}
+                        </div>
+                        <a href="{{ url_for('main.single_company', company_id=company.company_id) }}" class="btn btn-sm btn-outline-primary">View</a>
                     </li>
                 {% endfor %}
             </ul>

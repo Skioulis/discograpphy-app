@@ -14,5 +14,6 @@ class DiskForm(FlaskForm):
     submit = SubmitField('Add Disk')
 
     def validate_name(self, field):
-        if Disk.query.filter_by(name=field.data).first():
+        existing = Disk.query.filter_by(name=field.data).first()
+        if existing and existing.disk_id != getattr(self, 'editing_id', None):
             raise ValidationError('Disk with this name already exists.')

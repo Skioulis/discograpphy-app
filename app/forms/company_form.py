@@ -12,5 +12,6 @@ class CompanyForm(FlaskForm):
     submit = SubmitField('Add Company')
 
     def validate_name(self, field):
-        if Company.query.filter_by(name=field.data, labels_size=self.labels_size.data).first():
+        existing = Company.query.filter_by(name=field.data, labels_size=self.labels_size.data).first()
+        if existing and existing.company_id != getattr(self, 'editing_id', None):
             raise ValidationError('A company with this name and label size already exists.')

@@ -281,6 +281,141 @@ def delete_song(song_id):
     return redirect(url_for('main.home'))
 
 
+def _company_choices():
+    return [(c.company_id, f"{c.name} {c.labels_size}") for c in Company.query.order_by(Company.name).all()]
+
+
+def _load_disk(disk_id):
+    return Disk.query.options(
+        db.joinedload(Disk.company),
+        db.joinedload(Disk.songs)
+    ).filter(Disk.disk_id == disk_id).first_or_404()
+
+
+@main_bp.route('/disks/<int:disk_id>')
+def single_disk(disk_id):
+    disk = _load_disk(disk_id)
+    form = DiskForm(obj=disk)
+    form.company_id.choices = _company_choices()
+    form.company_id.data = disk.company_id
+    form.labels_size.data = int(disk.size) if disk.size and disk.size.isdigit() else 45
+    return render_template('single_pages/single_disk.html', disk=disk, form=form, edit_mode=False)
+
+
+@main_bp.route('/disks/<int:disk_id>/save', methods=['POST'])
+def save_disk(disk_id):
+    disk = _load_disk(disk_id)
+    form = DiskForm()
+    form.editing_id = disk.disk_id
+    form.company_id.choices = _company_choices()
+
+    if not form.validate_on_submit():
+        return render_template('single_pages/single_disk.html', disk=disk, form=form, edit_mode=True), 400
+
+    disk.name = form.name.data
+    disk.company_id = form.company_id.data
+    disk.size = str(form.labels_size.data) if form.labels_size.data else None
+    disk.sakisid = form.sakisid.data
+    disk.notes = form.notes.data
+    db.session.commit()
+    flash('Disk updated successfully!')
+    return redirect(url_for('main.single_disk', disk_id=disk.disk_id))
+
+
+@main_bp.route('/disks/<int:disk_id>/delete', methods=['POST'])
+def delete_disk(disk_id):
+    disk = Disk.query.get_or_404(disk_id)
+    disk.songs.clear()
+    db.session.delete(disk)
+    db.session.commit()
+    flash('Disk deleted successfully!')
+    return redirect(url_for('main.home'))
+
+
+def _load_person(person_id):
+    return Person.query.options(
+        db.joinedload(Person.songs).joinedload(PeopleSong.song)
+    ).filter(Person.person_id == person_id).first_or_404()
+
+
+@main_bp.route('/persons/<int:person_id>')
+def single_person(person_id):
+    person = _load_person(person_id)
+    form = PersonForm(obj=person)
+    return render_template('single_pages/single_person.html', person=person, form=form, edit_mode=False)
+
+
+@main_bp.route('/persons/<int:person_id>/save', methods=['POST'])
+def save_person(person_id):
+    person = _load_person(person_id)
+    form = PersonForm()
+    form.editing_id = person.person_id
+
+    if not form.validate_on_submit():
+        return render_template('single_pages/single_person.html', person=person, form=form, edit_mode=True), 400
+
+    person.name = form.name.data
+    person.notes = form.notes.data
+    db.session.commit()
+    flash('Person updated successfully!')
+    return redirect(url_for('main.single_person', person_id=person.person_id))
+
+
+@main_bp.route('/persons/<int:person_id>/delete', methods=['POST'])
+def delete_person(person_id):
+    person = Person.query.get_or_404(person_id)
+    PeopleSong.query.filter_by(person_id=person.person_id).delete(synchronize_session=False)
+    db.session.delete(person)
+    db.session.commit()
+    flash('Person deleted successfully!')
+    return redirect(url_for('main.home'))
+
+
+def _load_company(company_id):
+    return Company.query.options(
+        db.joinedload(Company.disks),
+        db.joinedload(Company.labels)
+    ).filter(Company.company_id == company_id).first_or_404()
+
+
+@main_bp.route('/companies/<int:company_id>')
+def single_company(company_id):
+    company = _load_company(company_id)
+    form = CompanyForm(obj=company)
+    form.labels_size.data = company.labels_size
+    return render_template('single_pages/single_company.html', company=company, form=form, edit_mode=False)
+
+
+@main_bp.route('/companies/<int:company_id>/save', methods=['POST'])
+def save_company(company_id):
+    company = _load_company(company_id)
+    form = CompanyForm()
+    form.editing_id = company.company_id
+
+    if not form.validate_on_submit():
+        return render_template('single_pages/single_company.html', company=company, form=form, edit_mode=True), 400
+
+    company.name = form.name.data
+    company.labels_size = form.labels_size.data
+    company.info = form.info.data
+    db.session.commit()
+    flash('Company updated successfully!')
+    return redirect(url_for('main.single_company', company_id=company.company_id))
+
+
+@main_bp.route('/companies/<int:company_id>/delete', methods=['POST'])
+def delete_company(company_id):
+    company = _load_company(company_id)
+    if company.disks or company.labels:
+        flash('Cannot delete a company that still has disks or labels linked to it.')
+        return redirect(url_for('main.single_company', company_id=company.company_id))
+
+    db.session.delete(company)
+    db.session.commit()
+    flash('Company deleted successfully!')
+    return redirect(url_for('main.home'))
+
+
 # Search categories: maps the dropdown value to a human label. 'everything'
 # searches all of them.
 SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies']

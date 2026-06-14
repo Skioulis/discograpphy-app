@@ -1,0 +1,23 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const editModeToggle = document.getElementById('edit-mode-toggle');
+    const editActions = document.getElementById('edit-actions');
+    if (!editModeToggle) {
+        return;
+    }
+
+    function setEditMode(enabled) {
+        document.querySelectorAll('.editable-field').forEach(function (field) {
+            field.disabled = !enabled;
+        });
+        if (editActions) {
+            editActions.classList.toggle('d-none', !enabled);
+        }
+    }
+
+    setEditMode(editModeToggle.checked);
+    editModeToggle.addEventListener('change', function () {
+        setEditMode(editModeToggle.checked);
+    });
+});
+</script>

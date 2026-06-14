@@ -9,5 +9,6 @@ class PersonForm(FlaskForm):
     submit = SubmitField('Add Person')
 
     def validate_name(self, field):
-        if Person.query.filter_by(name=field.data).first():
+        existing = Person.query.filter_by(name=field.data).first()
+        if existing and existing.person_id != getattr(self, 'editing_id', None):
             raise ValidationError('A person with this name already exists.')
