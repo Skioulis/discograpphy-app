@@ -120,9 +120,12 @@ def _paginate(query, sort_options):
         sort = 'updated'
     per_page = _resolve_per_page()
     page = request.args.get('page', 1, type=int)
-    pagination = query.order_by(sort_options[sort][1]()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
+    ordered = query.order_by(sort_options[sort][1]())
+    pagination = ordered.paginate(page=page, per_page=per_page, error_out=False)
+    # Clamp past-the-end requests (e.g. after deleting the last item on a page)
+    # to the last valid page so the user never lands on an empty page.
+    if pagination.pages and page > pagination.pages:
+        pagination = ordered.paginate(page=pagination.pages, per_page=per_page, error_out=False)
     return pagination, sort, per_page
 
 
@@ -647,9 +650,10 @@ def search():
                 results[category] = {'items': q.limit(SEARCH_PREVIEW).all(), 'count': count}
         else:
             page = request.args.get('page', 1, type=int)
-            pagination = _SEARCHERS[search_type](term).paginate(
-                page=page, per_page=per_page, error_out=False
-            )
+            search_query = _SEARCHERS[search_type](term)
+            pagination = search_query.paginate(page=page, per_page=per_page, error_out=False)
+            if pagination.pages and page > pagination.pages:
+                pagination = search_query.paginate(page=pagination.pages, per_page=per_page, error_out=False)
             total = pagination.total
             results[search_type] = {'items': pagination.items, 'count': pagination.total}
 

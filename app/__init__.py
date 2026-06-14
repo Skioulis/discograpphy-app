@@ -25,21 +25,19 @@ def create_app():
     # print(app.config['SQLALCHEMY_DATABASE_URI'])
     db.init_app(app)
     migrate.init_app(app, db)
-    
-    with app.app_context():
-        from . import models
-        db.create_all()
 
-
+    # Import models so Flask-Migrate can detect them. The schema is owned by
+    # Alembic migrations (flask db upgrade), not db.create_all().
+    from . import models  # noqa: F401
 
     # Import and register the blueprint from routes.py
     from .routes import main_bp
     app.register_blueprint(main_bp)
 
-    from datetime import datetime
+    from datetime import datetime, timezone
     @app.context_processor
     def inject_now():
-        return {'now': datetime.utcnow()}
+        return {'now': datetime.now(timezone.utc)}
 
     return app
 

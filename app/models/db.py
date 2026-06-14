@@ -7,10 +7,10 @@ db = SQLAlchemy()
 
 class TimestampMixin:
     created_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=lambda: datetime.now(timezone.utc)
+        sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     updated_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc)
     )
