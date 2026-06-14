@@ -1,11 +1,13 @@
 from typing import Optional, List, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+
 from .db import db, TimestampMixin
 from .associations import discsongs
 
 if TYPE_CHECKING:
     from .Song import Song
+    from .Company import Company
 
 class Disk(db.Model, TimestampMixin):
     __tablename__ = 'disks'
