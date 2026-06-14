@@ -458,7 +458,7 @@ def delete_disk_label(label_id):
 
 # Search categories: maps the dropdown value to a human label. 'everything'
 # searches all of them.
-SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies']
+SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies', 'disk_labels']
 
 
 def _search_songs(term):
@@ -485,11 +485,16 @@ def _search_companies(term):
     ).order_by(Company.name).all()
 
 
+def _search_disk_labels(term):
+    return DiskLabel.query.filter(DiskLabel.label.ilike(term)).order_by(DiskLabel.label).all()
+
+
 _SEARCHERS = {
     'songs': _search_songs,
     'disks': _search_disks,
     'persons': _search_persons,
     'companies': _search_companies,
+    'disk_labels': _search_disk_labels,
 }
 
 

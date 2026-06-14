@@ -81,6 +81,22 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
+        {% set disk_labels = results.get('disk_labels') %}
+        {% if disk_labels %}
+            <h3 class="mt-4">Disk Labels <span class="badge bg-secondary">{{ disk_labels|length }}</span></h3>
+            <ul class="list-group mb-4">
+                {% for label in disk_labels %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ label.label }}</strong>
+                            {% if label.company %}<small class="text-muted d-block">{{ label.company.name }}</small>{% endif %}
+                        </div>
+                        <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% endif %}
 {% endblock %}
 

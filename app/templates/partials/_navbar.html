@@ -44,6 +44,7 @@
               <option value="songs" {% if request.args.get('type') == 'songs' %}selected{% endif %}>Songs</option>
               <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Persons</option>
               <option value="companies" {% if request.args.get('type') == 'companies' %}selected{% endif %}>Companies</option>
+              <option value="disk_labels" {% if request.args.get('type') == 'disk_labels' %}selected{% endif %}>Disk Labels</option>
             </select>
             <input class="form-control me-2" type="search" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search" aria-label="Search"/>
             <button class="btn btn-outline-success" type="submit">Search</button>
