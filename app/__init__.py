@@ -17,6 +17,7 @@ def create_app(config_class=None):
     if config_class is None:
         config_class = get_config()
 
+    config_class.validate()
     app.config.from_object(config_class)
     app.config['SECRET_KEY'] = config_class.SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = config_class.database_uri

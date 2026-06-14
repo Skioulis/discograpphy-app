@@ -11,9 +11,16 @@ def _build_database_uri():
     return f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
 
 
+DEFAULT_SECRET_KEY = 'you-will-never-guess'
+
+
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or DEFAULT_SECRET_KEY
+
+    @classmethod
+    def validate(cls):
+        """Hook for env-specific config checks; overridden where needed."""
 
 
 class DevelopmentConfig(Config):
@@ -39,6 +46,14 @@ class ProductionConfig(Config):
         load_dotenv(env_file)
 
     database_uri = os.getenv('DATABASE_URL') or _build_database_uri()
+
+    @classmethod
+    def validate(cls):
+        if not cls.SECRET_KEY or cls.SECRET_KEY == DEFAULT_SECRET_KEY:
+            raise RuntimeError(
+                'SECRET_KEY must be set to a non-default value for production. '
+                'Set the SECRET_KEY environment variable.'
+            )
 
 
 CONFIG_BY_NAME = {

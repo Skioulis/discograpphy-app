@@ -4,7 +4,6 @@ import app as app_module
 from app import create_app
 from app.models.db import db
 from app.models.Song import Song
-from app.models.Lyric import Lyric
 from app.models.Disk import Disk
 from app.models.Person import Person
 from app.models.Company import Company
@@ -30,8 +29,7 @@ class RoutesTestCase(unittest.TestCase):
             company = Company(name='Acme Records', labels_size=45, info='A label')
             disk = Disk(name='Greatest Hits', company=company, size=45, sakisid='SK-1', notes='mint')
             person = Person(name='John Doe', notes='singer')
-            song = Song(title='Hello World', notes='a song')
-            song.lyrics.append(Lyric(lyric='la la la'))
+            song = Song(title='Hello World', notes='a song', lyrics='la la la')
             song.disks.append(disk)
             label = DiskLabel(label='Side A', company=company)
             db.session.add_all([company, disk, person, song, label])
@@ -220,6 +218,36 @@ class RoutesTestCase(unittest.TestCase):
         self.assertEqual(r.status_code, 404)
         self.assertIn(b'Page not found', r.data)
 
+    # ---- add_song with duplicate person names merges roles ----
+    def test_add_song_merges_duplicate_person_rows(self):
+        data = {
+            'title': 'Dup People Song',
+            'disk_name': '',
+            'lyrics': 'words',
+            'notes': '',
+            'persons-0-person_name': 'Repeated Artist',
+            'persons-0-isSinger': 'y',
+            'persons-1-person_name': 'Repeated Artist',
+            'persons-1-isComposer': 'y',
+        }
+        r = self.client.post('/add-song', data=data)
+        self.assertEqual(r.status_code, 302)  # no IntegrityError
+        with self.app.app_context():
+            song = Song.query.filter_by(title='Dup People Song').first()
+            self.assertEqual(len(song.people), 1)
+            self.assertTrue(song.people[0].isSinger)
+            self.assertTrue(song.people[0].isComposer)
+            self.assertEqual(song.lyrics, 'words')
+
+    # ---- unique constraints ----
+    def test_person_name_unique_constraint(self):
+        from sqlalchemy.exc import IntegrityError
+        with self.app.app_context():
+            db.session.add(Person(name='John Doe'))  # already exists from setUp
+            with self.assertRaises(IntegrityError):
+                db.session.commit()
+            db.session.rollback()
+
 
 class ConfigSelectionTests(unittest.TestCase):
     def test_get_config_by_name(self):
@@ -230,6 +258,15 @@ class ConfigSelectionTests(unittest.TestCase):
     def test_get_config_unknown_defaults_to_development(self):
         from config import get_config, DevelopmentConfig
         self.assertIs(get_config('nonsense'), DevelopmentConfig)
+
+    def test_production_requires_non_default_secret_key(self):
+        from unittest import mock
+        from config import ProductionConfig, DEFAULT_SECRET_KEY
+        with mock.patch.object(ProductionConfig, 'SECRET_KEY', DEFAULT_SECRET_KEY):
+            with self.assertRaises(RuntimeError):
+                ProductionConfig.validate()
+        with mock.patch.object(ProductionConfig, 'SECRET_KEY', 'a-real-secret'):
+            ProductionConfig.validate()  # should not raise
 
 
 if __name__ == '__main__':

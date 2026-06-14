@@ -4,7 +4,6 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from sqlalchemy import func, or_
 
 from .models.Song import Song
-from .models.Lyric import Lyric
 from .models.associations import PeopleSong
 from .models.db import db
 from .forms.disk_form import DiskForm
@@ -35,7 +34,6 @@ def _safe_redirect(default_endpoint):
 def _load_song_with_details(song_id):
     return Song.query.options(
         db.joinedload(Song.people).joinedload(PeopleSong.person),
-        db.joinedload(Song.lyrics),
         db.joinedload(Song.disks)
     ).filter(Song.song_id == song_id).first_or_404()
 
@@ -45,7 +43,7 @@ def _build_single_song_form(song):
 
     form.title.data = song.title
     form.notes.data = song.notes or ''
-    form.lyrics.data = '\n\n'.join(lyric.lyric for lyric in song.lyrics)
+    form.lyrics.data = song.lyrics or ''
     form.disk_name.data = song.disks[0].name if song.disks else ''
 
     while len(form.persons) > 0:
@@ -63,6 +61,34 @@ def _build_single_song_form(song):
         form.persons.append_entry()
 
     return form
+
+
+def _merge_song_people(persons_field):
+    """Resolve the submitted person rows into {person: roles}, creating missing
+    people and OR-ing roles for repeated names (PeopleSong PK is person+song, so
+    duplicates would otherwise raise an IntegrityError)."""
+    merged = {}
+    for p_form in persons_field:
+        name = (p_form.person_name.data or '').strip()
+        if not name:
+            continue
+
+        person = Person.query.filter_by(name=name).first()
+        if not person:
+            person = Person(name=name)
+            db.session.add(person)
+            db.session.flush()
+
+        roles = merged.setdefault(person, {
+            'isSinger': False, 'isComposer': False,
+            'isSongwriter': False, 'isMusician': False,
+        })
+        roles['isSinger'] = roles['isSinger'] or bool(p_form.isSinger.data)
+        roles['isComposer'] = roles['isComposer'] or bool(p_form.isComposer.data)
+        roles['isSongwriter'] = roles['isSongwriter'] or bool(p_form.isSongwriter.data)
+        roles['isMusician'] = roles['isMusician'] or bool(p_form.isMusician.data)
+
+    return merged
 
 @main_bp.route('/')
 def home():
@@ -268,35 +294,17 @@ def add_song():
 
         new_song = Song(
             title=form.title.data,
-            notes=form.notes.data
+            notes=form.notes.data,
+            lyrics=(form.lyrics.data.strip() or None) if form.lyrics.data else None,
         )
-        
-        # Add lyrics if provided
-        if form.lyrics.data:
-            new_song.lyrics.append(Lyric(lyric=form.lyrics.data))
-        
+
         # Link to disk if selected
         if selected_disk:
             new_song.disks.append(selected_disk)
 
-        # Process persons
-        for p_form in form.persons:
-            name = p_form.person_name.data
-            if name:
-                person = Person.query.filter_by(name=name).first()
-                if not person:
-                    person = Person(name=name)
-                    db.session.add(person)
-                
-                ps = PeopleSong(
-                    person=person,
-                    song=new_song,
-                    isSinger=p_form.isSinger.data,
-                    isComposer=p_form.isComposer.data,
-                    isSongwriter=p_form.isSongwriter.data,
-                    isMusician=p_form.isMusician.data
-                )
-                db.session.add(ps)
+        # Process persons (merging duplicate names)
+        for person, roles in _merge_song_people(form.persons).items():
+            db.session.add(PeopleSong(person=person, song=new_song, **roles))
 
         db.session.add(new_song)
         db.session.commit()
@@ -340,47 +348,12 @@ def save_song(song_id):
     if selected_disk:
         song.disks.append(selected_disk)
 
-    song.lyrics.clear()
-    if form.lyrics.data and form.lyrics.data.strip():
-        song.lyrics.append(Lyric(lyric=form.lyrics.data.strip()))
+    song.lyrics = form.lyrics.data.strip() if form.lyrics.data and form.lyrics.data.strip() else None
 
     PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
 
-    merged_people = {}
-    for p_form in form.persons:
-        person_name = (p_form.person_name.data or '').strip()
-        if not person_name:
-            continue
-
-        person = Person.query.filter_by(name=person_name).first()
-        if not person:
-            person = Person(name=person_name)
-            db.session.add(person)
-            db.session.flush()
-
-        person_roles = merged_people.get(person.person_id)
-        if person_roles:
-            person_roles['isSinger'] = person_roles['isSinger'] or bool(p_form.isSinger.data)
-            person_roles['isComposer'] = person_roles['isComposer'] or bool(p_form.isComposer.data)
-            person_roles['isSongwriter'] = person_roles['isSongwriter'] or bool(p_form.isSongwriter.data)
-            person_roles['isMusician'] = person_roles['isMusician'] or bool(p_form.isMusician.data)
-        else:
-            merged_people[person.person_id] = {
-                'isSinger': bool(p_form.isSinger.data),
-                'isComposer': bool(p_form.isComposer.data),
-                'isSongwriter': bool(p_form.isSongwriter.data),
-                'isMusician': bool(p_form.isMusician.data)
-            }
-
-    for person_id, roles in merged_people.items():
-        db.session.add(PeopleSong(
-            person_id=person_id,
-            song_id=song.song_id,
-            isSinger=roles['isSinger'],
-            isComposer=roles['isComposer'],
-            isSongwriter=roles['isSongwriter'],
-            isMusician=roles['isMusician']
-        ))
+    for person, roles in _merge_song_people(form.persons).items():
+        db.session.add(PeopleSong(person=person, song=song, **roles))
 
     db.session.commit()
     flash('Song updated successfully!', 'success')

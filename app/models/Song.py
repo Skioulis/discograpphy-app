@@ -6,7 +6,6 @@ from .associations import discsongs
 
 if TYPE_CHECKING:
     from .Disk import Disk
-    from .Lyric import Lyric
     from .associations import PeopleSong
 
 class Song(db.Model, TimestampMixin):
@@ -15,9 +14,8 @@ class Song(db.Model, TimestampMixin):
     song_id: so.Mapped[int] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(250), index=True)
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
+    lyrics: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
 
-    lyrics: so.Mapped[List['Lyric']] = so.relationship(back_populates='song', cascade='all, delete-orphan')
-    
     disks: so.Mapped[List['Disk']] = so.relationship(
         secondary=discsongs,
         back_populates='songs'

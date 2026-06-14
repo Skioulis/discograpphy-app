@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 
 class Disk(db.Model, TimestampMixin):
     __tablename__ = 'disks'
+    __table_args__ = (
+        sa.UniqueConstraint('name', name='uq_disks_name'),
+    )
 
     disk_id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(250), index=True)
