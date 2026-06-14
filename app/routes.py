@@ -504,7 +504,8 @@ def single_disk(disk_id):
     form.company_id.choices = _company_choices()
     form.company_id.data = disk.company_id
     form.labels_size.data = int(disk.size) if disk.size and disk.size.isdigit() else 45
-    return render_template('single_pages/single_disk.html', disk=disk, form=form, edit_mode=False)
+    edit_mode = request.args.get('edit') == '1'
+    return render_template('single_pages/single_disk.html', disk=disk, form=form, edit_mode=edit_mode)
 
 
 @main_bp.route('/disks/<int:disk_id>/save', methods=['POST'])
@@ -534,7 +535,7 @@ def delete_disk(disk_id):
     db.session.delete(disk)
     db.session.commit()
     flash('Disk deleted successfully!')
-    return redirect(url_for('main.home'))
+    return _safe_redirect('main.home')
 
 
 def _load_person(person_id):
@@ -547,7 +548,8 @@ def _load_person(person_id):
 def single_person(person_id):
     person = _load_person(person_id)
     form = PersonForm(obj=person)
-    return render_template('single_pages/single_person.html', person=person, form=form, edit_mode=False)
+    edit_mode = request.args.get('edit') == '1'
+    return render_template('single_pages/single_person.html', person=person, form=form, edit_mode=edit_mode)
 
 
 @main_bp.route('/persons/<int:person_id>/save', methods=['POST'])
@@ -573,7 +575,7 @@ def delete_person(person_id):
     db.session.delete(person)
     db.session.commit()
     flash('Person deleted successfully!')
-    return redirect(url_for('main.home'))
+    return _safe_redirect('main.home')
 
 
 def _load_company(company_id):
@@ -588,7 +590,8 @@ def single_company(company_id):
     company = _load_company(company_id)
     form = CompanyForm(obj=company)
     form.labels_size.data = company.labels_size
-    return render_template('single_pages/single_company.html', company=company, form=form, edit_mode=False)
+    edit_mode = request.args.get('edit') == '1'
+    return render_template('single_pages/single_company.html', company=company, form=form, edit_mode=edit_mode)
 
 
 @main_bp.route('/companies/<int:company_id>/save', methods=['POST'])
@@ -618,7 +621,7 @@ def delete_company(company_id):
     db.session.delete(company)
     db.session.commit()
     flash('Company deleted successfully!')
-    return redirect(url_for('main.home'))
+    return _safe_redirect('main.home')
 
 
 def _load_disk_label(label_id):
@@ -633,7 +636,8 @@ def single_disk_label(label_id):
     form = DiskLabelForm(obj=label)
     form.company_id.choices = _company_choices()
     form.company_id.data = label.company_id
-    return render_template('single_pages/single_disk_label.html', label=label, form=form, edit_mode=False)
+    edit_mode = request.args.get('edit') == '1'
+    return render_template('single_pages/single_disk_label.html', label=label, form=form, edit_mode=edit_mode)
 
 
 @main_bp.route('/disk-labels/<int:label_id>/save', methods=['POST'])
@@ -658,7 +662,7 @@ def delete_disk_label(label_id):
     db.session.delete(label)
     db.session.commit()
     flash('Disk Label deleted successfully!')
-    return redirect(url_for('main.home'))
+    return _safe_redirect('main.home')
 
 
 # Search categories: maps the dropdown value to a human label. 'everything'
