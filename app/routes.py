@@ -64,6 +64,46 @@ def home():
 
     return render_template('index.html', songs=songs)
 
+SONG_SORT_OPTIONS = {
+    'updated': ('Recently updated', lambda: Song.updated_at.desc()),
+    'name': ('Name (A–Z)', lambda: Song.title.asc()),
+    'oldest_updated': ('Least recently updated', lambda: Song.updated_at.asc()),
+}
+PER_PAGE_CHOICES = [10, 20, 50, 100]
+
+
+@main_bp.route('/songs')
+def songs_list():
+    sort = request.args.get('sort', 'updated')
+    if sort not in SONG_SORT_OPTIONS:
+        sort = 'updated'
+
+    try:
+        per_page = int(request.args.get('per_page', 10))
+    except (TypeError, ValueError):
+        per_page = 10
+    if per_page not in PER_PAGE_CHOICES:
+        per_page = 10
+
+    page = request.args.get('page', 1, type=int)
+
+    pagination = Song.query.options(
+        db.selectinload(Song.people).joinedload(PeopleSong.person)
+    ).order_by(SONG_SORT_OPTIONS[sort][1]()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template(
+        'songs_list.html',
+        pagination=pagination,
+        songs=pagination.items,
+        sort=sort,
+        per_page=per_page,
+        sort_options=SONG_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
 @main_bp.route('/add-disk', methods=['GET', 'POST'])
 def add_disk():
     form = DiskForm()

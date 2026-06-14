@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %} Songs {% endblock %}
+{% block body %}
+    <h1 class="mb-4 text-center">Songs</h1>
+
+    <form method="GET" action="{{ url_for('main.songs_list') }}" class="row g-2 justify-content-end align-items-end mb-4">
+        <div class="col-auto">
+            <label for="sort" class="form-label mb-0 small text-muted">Order by</label>
+            <select id="sort" name="sort" class="form-select" onchange="this.form.submit()">
+                {% for value, (label, _) in sort_options.items() %}
+                    <option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <label for="per_page" class="form-label mb-0 small text-muted">Per page</label>
+            <select id="per_page" name="per_page" class="form-select" onchange="this.form.submit()">
+                {% for choice in per_page_choices %}
+                    <option value="{{ choice }}" {% if choice == per_page %}selected{% endif %}>{{ choice }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <noscript><div class="col-auto"><button type="submit" class="btn btn-outline-success">Apply</button></div></noscript>
+    </form>
+
+    {% if not songs %}
+        <p class="text-center text-muted">No songs found.</p>
+    {% else %}
+        <p class="text-center text-muted small mb-3">
+            Showing {{ songs|length }} of {{ pagination.total }} song{{ '' if pagination.total == 1 else 's' }}
+        </p>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for song in songs %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ song.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Συντελεστές</h6>
+                            <ul class="list-unstyled text-muted small mb-2">
+                                {% for ps in song.people %}
+                                    {% set roles = [] %}
+                                    {% if ps.isComposer %}{% set roles = roles + ['Composer'] %}{% endif %}
+                                    {% if ps.isSongwriter %}{% set roles = roles + ['Writer'] %}{% endif %}
+                                    {% if ps.isSinger %}{% set roles = roles + ['Singer'] %}{% endif %}
+                                    {% if ps.isMusician %}{% set roles = roles + ['Musician'] %}{% endif %}
+                                    <li>
+                                        <strong>{{ ps.person.name }}</strong>
+                                        {% if roles %}: {{ roles|join(', ') }}{% else %}: No roles{% endif %}
+                                    </li>
+                                {% else %}
+                                    <li>Unknown Artist</li>
+                                {% endfor %}
+                            </ul>
+                            {% if song.notes %}
+                                <p class="card-text"><small class="text-truncate d-block" style="max-width: 100%;">{{ song.notes }}</small></p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if pagination.pages > 1 %}
+            <nav aria-label="Songs pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.songs_list', page=pagination.prev_num, sort=sort, per_page=per_page) }}">Previous</a>
+                    </li>
+                    {% for p in pagination.iter_pages() %}
+                        {% if p %}
+                            <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('main.songs_list', page=p, sort=sort, per_page=per_page) }}">{{ p }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('main.songs_list', page=pagination.next_num, sort=sort, per_page=per_page) }}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}{% endblock %}
