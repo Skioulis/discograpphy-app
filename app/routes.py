@@ -143,6 +143,80 @@ def disks_list():
     )
 
 
+PERSON_SORT_OPTIONS = {
+    'updated': ('Recently updated', lambda: Person.updated_at.desc()),
+    'name': ('Name (A–Z)', lambda: Person.name.asc()),
+    'oldest_updated': ('Least recently updated', lambda: Person.updated_at.asc()),
+}
+
+
+@main_bp.route('/persons')
+def persons_list():
+    sort = request.args.get('sort', 'updated')
+    if sort not in PERSON_SORT_OPTIONS:
+        sort = 'updated'
+
+    try:
+        per_page = int(request.args.get('per_page', 10))
+    except (TypeError, ValueError):
+        per_page = 10
+    if per_page not in PER_PAGE_CHOICES:
+        per_page = 10
+
+    page = request.args.get('page', 1, type=int)
+
+    pagination = Person.query.order_by(PERSON_SORT_OPTIONS[sort][1]()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template(
+        'persons_list.html',
+        pagination=pagination,
+        persons=pagination.items,
+        sort=sort,
+        per_page=per_page,
+        sort_options=PERSON_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
+COMPANY_SORT_OPTIONS = {
+    'updated': ('Recently updated', lambda: Company.updated_at.desc()),
+    'name': ('Name (A–Z)', lambda: Company.name.asc()),
+    'oldest_updated': ('Least recently updated', lambda: Company.updated_at.asc()),
+}
+
+
+@main_bp.route('/companies')
+def companies_list():
+    sort = request.args.get('sort', 'updated')
+    if sort not in COMPANY_SORT_OPTIONS:
+        sort = 'updated'
+
+    try:
+        per_page = int(request.args.get('per_page', 10))
+    except (TypeError, ValueError):
+        per_page = 10
+    if per_page not in PER_PAGE_CHOICES:
+        per_page = 10
+
+    page = request.args.get('page', 1, type=int)
+
+    pagination = Company.query.order_by(COMPANY_SORT_OPTIONS[sort][1]()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template(
+        'companies_list.html',
+        pagination=pagination,
+        companies=pagination.items,
+        sort=sort,
+        per_page=per_page,
+        sort_options=COMPANY_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
 @main_bp.route('/add-disk', methods=['GET', 'POST'])
 def add_disk():
     form = DiskForm()
