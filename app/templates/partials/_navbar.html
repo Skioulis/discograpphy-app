@@ -8,23 +8,24 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% set endpoint = request.endpoint %}
             <li class="nav-item">
-              <a class="nav-link active " aria-current="page" href="{{ url_for('main.home') }}"><span class="navbar-text">Home</span></a>
+              <a class="nav-link{% if endpoint == 'main.home' %} active{% endif %}"{% if endpoint == 'main.home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text">Home</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Songs</span></a>
+              <a class="nav-link{% if endpoint in ['main.songs_list', 'main.single_song', 'main.add_song'] %} active{% endif %}"{% if endpoint in ['main.songs_list', 'main.single_song', 'main.add_song'] %} aria-current="page"{% endif %} href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Songs</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.disks_list') }}"><span class="navbar-text">Disks</span></a>
+              <a class="nav-link{% if endpoint in ['main.disks_list', 'main.single_disk', 'main.add_disk'] %} active{% endif %}"{% if endpoint in ['main.disks_list', 'main.single_disk', 'main.add_disk'] %} aria-current="page"{% endif %} href="{{ url_for('main.disks_list') }}"><span class="navbar-text">Disks</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Persons</span></a>
+              <a class="nav-link{% if endpoint in ['main.persons_list', 'main.single_person', 'main.add_person'] %} active{% endif %}"{% if endpoint in ['main.persons_list', 'main.single_person', 'main.add_person'] %} aria-current="page"{% endif %} href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Persons</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Companies</span></a>
+              <a class="nav-link{% if endpoint in ['main.companies_list', 'main.single_company', 'main.add_company'] %} active{% endif %}"{% if endpoint in ['main.companies_list', 'main.single_company', 'main.add_company'] %} aria-current="page"{% endif %} href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Companies</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Disk Labels</span></a>
+              <a class="nav-link{% if endpoint in ['main.disk_labels_list', 'main.single_disk_label', 'main.add_disk_label'] %} active{% endif %}"{% if endpoint in ['main.disk_labels_list', 'main.single_disk_label', 'main.add_disk_label'] %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Disk Labels</span></a>
             </li>
             <li class="nav-item dropdown ">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
