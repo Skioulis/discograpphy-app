@@ -92,7 +92,7 @@ def _merge_song_people(persons_field):
 
 @main_bp.route('/')
 def home():
-    songs = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).order_by(func.random()).limit(9).all()
+    songs = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).order_by(func.random()).limit(10).all()
     # testsong = Song.query.options(db.joinedload(Song.people).joinedload(PeopleSong.person)).filter(
     #     Song.song_id == 2).first()
     # print(testsong)
