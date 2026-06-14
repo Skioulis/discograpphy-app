@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from sqlalchemy import func
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from sqlalchemy import func, or_
 
 from .models.Song import Song
 from .models.Lyric import Lyric
@@ -279,4 +279,67 @@ def delete_song(song_id):
 
     flash('Song deleted successfully!')
     return redirect(url_for('main.home'))
+
+
+# Search categories: maps the dropdown value to a human label. 'everything'
+# searches all of them.
+SEARCH_CATEGORIES = ['songs', 'disks', 'persons', 'companies']
+
+
+def _search_songs(term):
+    return Song.query.filter(
+        or_(Song.title.ilike(term), Song.notes.ilike(term))
+    ).order_by(Song.title).all()
+
+
+def _search_disks(term):
+    return Disk.query.filter(
+        or_(Disk.name.ilike(term), Disk.notes.ilike(term), Disk.sakisid.ilike(term))
+    ).order_by(Disk.name).all()
+
+
+def _search_persons(term):
+    return Person.query.filter(
+        or_(Person.name.ilike(term), Person.notes.ilike(term))
+    ).order_by(Person.name).all()
+
+
+def _search_companies(term):
+    return Company.query.filter(
+        or_(Company.name.ilike(term), Company.info.ilike(term))
+    ).order_by(Company.name).all()
+
+
+_SEARCHERS = {
+    'songs': _search_songs,
+    'disks': _search_disks,
+    'persons': _search_persons,
+    'companies': _search_companies,
+}
+
+
+@main_bp.route('/search')
+def search():
+    query = (request.args.get('q') or '').strip()
+    search_type = request.args.get('type', 'everything')
+    if search_type not in _SEARCHERS:
+        search_type = 'everything'
+
+    results = {}
+    total = 0
+    if query:
+        term = f'%{query}%'
+        categories = SEARCH_CATEGORIES if search_type == 'everything' else [search_type]
+        for category in categories:
+            found = _SEARCHERS[category](term)
+            results[category] = found
+            total += len(found)
+
+    return render_template(
+        'search_results.html',
+        query=query,
+        search_type=search_type,
+        results=results,
+        total=total,
+    )
 

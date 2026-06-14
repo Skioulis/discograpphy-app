@@ -37,8 +37,15 @@
               <a class="nav-link disabled" aria-disabled="true">Disabled</a>
             </li>
           </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+          <form class="d-flex" role="search" method="GET" action="{{ url_for('main.search') }}">
+            <select class="form-select me-2 flex-shrink-0" name="type" aria-label="Search category" style="width: auto;">
+              <option value="everything" {% if request.args.get('type', 'everything') == 'everything' %}selected{% endif %}>Everything</option>
+              <option value="disks" {% if request.args.get('type') == 'disks' %}selected{% endif %}>Disks</option>
+              <option value="songs" {% if request.args.get('type') == 'songs' %}selected{% endif %}>Songs</option>
+              <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Persons</option>
+              <option value="companies" {% if request.args.get('type') == 'companies' %}selected{% endif %}>Companies</option>
+            </select>
+            <input class="form-control me-2" type="search" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search" aria-label="Search"/>
             <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
         </div>
