@@ -217,6 +217,45 @@ def companies_list():
     )
 
 
+DISK_LABEL_SORT_OPTIONS = {
+    'updated': ('Recently updated', lambda: DiskLabel.updated_at.desc()),
+    'name': ('Name (A–Z)', lambda: DiskLabel.label.asc()),
+    'oldest_updated': ('Least recently updated', lambda: DiskLabel.updated_at.asc()),
+}
+
+
+@main_bp.route('/disk-labels')
+def disk_labels_list():
+    sort = request.args.get('sort', 'updated')
+    if sort not in DISK_LABEL_SORT_OPTIONS:
+        sort = 'updated'
+
+    try:
+        per_page = int(request.args.get('per_page', 10))
+    except (TypeError, ValueError):
+        per_page = 10
+    if per_page not in PER_PAGE_CHOICES:
+        per_page = 10
+
+    page = request.args.get('page', 1, type=int)
+
+    pagination = DiskLabel.query.options(
+        db.joinedload(DiskLabel.company)
+    ).order_by(DISK_LABEL_SORT_OPTIONS[sort][1]()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template(
+        'disk_labels_list.html',
+        pagination=pagination,
+        labels=pagination.items,
+        sort=sort,
+        per_page=per_page,
+        sort_options=DISK_LABEL_SORT_OPTIONS,
+        per_page_choices=PER_PAGE_CHOICES,
+    )
+
+
 @main_bp.route('/add-disk', methods=['GET', 'POST'])
 def add_disk():
     form = DiskForm()
