@@ -212,6 +212,17 @@ class RoutesTestCase(unittest.TestCase):
         self.assertIn(b'100% Pure', r.data)
         self.assertNotIn(b'1000 Songs', r.data)
 
+    # ---- search across relationships ----
+    def test_search_song_by_person_name(self):
+        r = self.client.get('/search?q=John&type=songs')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'Hello World', r.data)  # song matched via its person 'John Doe'
+
+    def test_search_disk_by_company_name(self):
+        r = self.client.get('/search?q=Acme&type=disks')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'Greatest Hits', r.data)  # disk matched via company 'Acme Records'
+
     # ---- error pages ----
     def test_404_page(self):
         r = self.client.get('/songs/999999')

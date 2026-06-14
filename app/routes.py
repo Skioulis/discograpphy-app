@@ -569,15 +569,26 @@ def _like_term(query):
 
 
 def _search_songs(term):
+    # Match a song by its own fields, its disks, or its people (EXISTS subqueries
+    # avoid join-duplicated rows so count()/paginate() stay correct).
     return Song.query.filter(
-        or_(Song.title.ilike(term, escape='\\'), Song.notes.ilike(term, escape='\\'))
+        or_(
+            Song.title.ilike(term, escape='\\'),
+            Song.notes.ilike(term, escape='\\'),
+            Song.disks.any(Disk.name.ilike(term, escape='\\')),
+            Song.people.any(PeopleSong.person.has(Person.name.ilike(term, escape='\\'))),
+        )
     ).order_by(Song.title)
 
 
 def _search_disks(term):
     return Disk.query.options(db.joinedload(Disk.company)).filter(
-        or_(Disk.name.ilike(term, escape='\\'), Disk.notes.ilike(term, escape='\\'),
-            Disk.sakisid.ilike(term, escape='\\'))
+        or_(
+            Disk.name.ilike(term, escape='\\'),
+            Disk.notes.ilike(term, escape='\\'),
+            Disk.sakisid.ilike(term, escape='\\'),
+            Disk.company.has(Company.name.ilike(term, escape='\\')),
+        )
     ).order_by(Disk.name)
 
 
