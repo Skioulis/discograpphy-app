@@ -1,163 +1,58 @@
-.footer {
-    color: var(--color-text);
-    padding-top: 0.2rem;
-    text-align: center;
-    /*max-height: 80px;*/
-    font-size: 0.5rem;
+/* =====================================================================
+   Footer — refined, static (no longer fixed/overlapping), warm surface.
+   ===================================================================== */
 
-    /* let it span full viewport width at the bottom */
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    /* optional: avoid being limited by parent width */
-    width: 100vw;
+footer {
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-muted);
+    margin-top: 2rem;
+    padding: 1rem 0;
 }
 
-/* optional: if you want content centered with internal max width */
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    font-size: 1em;
-    padding: 0.5rem;
+footer .container { max-width: 1200px; }
+
+footer,
+footer .text-body-secondary {
+    color: var(--color-muted) !important;
+    font-size: 0.9rem;
 }
 
-footer a, footer a:hover, footer a:focus, footer a:active {
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:active {
     text-decoration: none !important;
-}
-
-.footer a, .footer a:hover, .footer a:focus, .footer a:active {
-    text-decoration: none !important;
-    outline: none; /* let us control the ring */
-    display: inline-block;
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Hover (mouse) */
-.footer a:hover {
-    color: #0A66C2;
-    transform: scale(1.2);
-}
-
-/* For the new footer icons */
-.nav .ms-3 a, .col-md-4 a[aria-label="Home"] {
-    display: flex;
+    outline: none;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 45px;
-    height: 45px;
+    transition: transform 0.25s ease-in-out, background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+/* Round icon buttons (home + social) */
+footer .nav .ms-3 a,
+footer a[aria-label="Home"] {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    text-decoration: none !important;
+    color: var(--color-muted);
+}
+footer .nav .ms-3 a:hover,
+footer a[aria-label="Home"]:hover {
+    transform: scale(1.12);
+    background-color: var(--color-surface-alt);
 }
 
-.nav .ms-3 a:hover, .col-md-4 a[aria-label="Home"]:hover {
-    transform: scale(1.2);
-    background-color: rgba(0, 0, 0, 0.05); /* Light circle background */
+footer a[aria-label="email"]:hover  { color: var(--color-email); }
+footer a[aria-label="linkedin"]:hover { color: var(--color-linkedIn); }
+footer a[aria-label="github"]:hover { color: var(--color-github); }
+footer a[aria-label="Home"]:hover   { color: var(--color-primary); }
+
+footer a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 8px;
 }
 
-[data-bs-theme="dark"] .nav .ms-3 a:hover, 
-[data-bs-theme="dark"] .col-md-4 a[aria-label="Home"]:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Light circle for dark mode */
-}
-
-.footer a:focus-visible {
-    outline: 2px solid #0A66C2;         /* accent color */
-    outline-offset: 3px;                 /* space between element and ring */
-    border-radius: 6px;                  /* optional: soften corners */
-}
-
-
-.email-link {
-    color: var(--color-email);
-    text-decoration: none;
-}
-
-.linkedIn-link {
-    color: var(--color-linkedIn);
-}
-
-.github-link {
-    color: var(--color-github);
-}
-
-.github-link:hover .email-link:hover .linkedIn-link:hover {
-    color: var(--color-accent);
-    opacity: 0.8;
-
-}
-
-
-.bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-user-select: none;
-}
-@media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-    }
-}
-.b-example-divider {
-    width: 100%;
-    height: 3rem;
-    background-color: #0000001a;
-    border: solid rgba(0, 0, 0, 0.15);
-    border-width: 1px 0;
-    box-shadow:
-      inset 0 0.5em 1.5em #0000001a,
-      inset 0 0.125em 0.5em #00000026;
-}
-.b-example-vr {
-    flex-shrink: 0;
-    width: 1.5rem;
-    height: 100vh;
-}
-.bi {
-    vertical-align: -0.125em;
-    fill: currentColor;
-}
-.nav-scroller {
-    position: relative;
-    z-index: 2;
-    height: 2.75rem;
-    overflow-y: hidden;
-}
-.nav-scroller .nav {
-    display: flex;
-    flex-wrap: nowrap;
-    padding-bottom: 1rem;
-    margin-top: -1px;
-    overflow-x: auto;
-    text-align: center;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-}
-.btn-bd-primary {
-    --bd-violet-bg: #712cf9;
-    --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
-    --bs-btn-font-weight: 600;
-    --bs-btn-color: var(--bs-white);
-    --bs-btn-bg: var(--bd-violet-bg);
-    --bs-btn-border-color: var(--bd-violet-bg);
-    --bs-btn-hover-color: var(--bs-white);
-    --bs-btn-hover-bg: #6528e0;
-    --bs-btn-hover-border-color: #6528e0;
-    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-    --bs-btn-active-color: var(--bs-btn-hover-color);
-    --bs-btn-active-bg: #5a23c8;
-    --bs-btn-active-border-color: #5a23c8;
-}
-.bd-mode-toggle {
-    z-index: 1500;
-}
-.bd-mode-toggle .bi {
-    width: 1em;
-    height: 1em;
-}
-.bd-mode-toggle .dropdown-menu .active .bi {
-    display: block !important;
-}
+.copyright-symbol { color: var(--color-primary); }

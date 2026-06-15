@@ -1,63 +1,448 @@
-:root{
-    --color-bg: #FBF3D5;
-    --color-surface: #D6DAC8;
-    --color-accent: #9CAFAA;
-    --color-primary: #D6A99D;
-    --color-text: #1f2937;
-    --color-email: #EA4335;
-    --color-linkedIn: #0A66C2;
-    --color-github: #181717;
+/* =====================================================================
+   Discography App — refined "Σάκης Collection" theme
+   A polished take on the original warm, earthy palette + vinyl motif.
+   Loaded AFTER Bootstrap 5.3, so it overrides Bootstrap's CSS variables.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. Palette & design tokens                                          */
+/* ------------------------------------------------------------------ */
+:root {
+    /* Surfaces */
+    --color-bg:           #FAF3E0;   /* warm cream page background       */
+    --color-bg-2:         #F1E7CC;   /* deeper cream for gradient        */
+    --color-surface:      #FFFDF6;   /* cards / panels (near-white warm) */
+    --color-surface-alt:  #F3EDDC;   /* subtle alt surface               */
+    --color-border:       #E6DCC2;   /* warm hairline borders            */
+
+    /* Ink */
+    --color-text:         #2C2620;   /* primary text (warm near-black)   */
+    --color-muted:        #877C68;   /* secondary text                   */
+
+    /* Accents (derived from the original sage / dusty-rose family) */
+    --color-primary:      #B25B49;   /* terracotta — links & primary     */
+    --color-primary-700:  #984537;   /* darker terracotta (hover/active) */
+    --color-rose:         #D6A99D;   /* original soft rose (highlights)  */
+    --color-amber:        #E3B468;   /* warm ochre — "edit"/warning      */
+    --color-amber-700:    #B07F33;
+    --color-sage:         #7E957F;   /* sage green — success             */
+    --color-sage-700:     #5F7660;
+    --color-teal:         #5C8A8A;   /* muted teal — info                */
+    --color-teal-700:     #426868;
+    --color-secondary:    #7C8779;   /* gray-green neutral               */
+    --color-secondary-700:#5E685B;
+    --color-danger:       #B5503F;   /* muted brick red                  */
+    --color-danger-700:   #8F3C2E;
+
+    /* Social */
+    --color-email:        #EA4335;
+    --color-linkedIn:     #0A66C2;
+    --color-github:       #181717;
+
+    /* Shape & motion */
+    --radius:        14px;
+    --radius-sm:     10px;
+    --shadow-sm:     0 2px 6px rgba(44, 38, 32, 0.06);
+    --shadow:        0 10px 30px rgba(44, 38, 32, 0.10);
+    --shadow-lg:     0 18px 48px rgba(44, 38, 32, 0.16);
+    --ease:          0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ---- Bootstrap runtime variable overrides ---- */
+    --bs-body-bg:            transparent;
+    --bs-body-color:         var(--color-text);
+    --bs-body-font-family:   "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-emphasis-color:     var(--color-text);
+    --bs-secondary-color:    var(--color-muted);
+    --bs-tertiary-color:     var(--color-muted);
+    --bs-border-color:       var(--color-border);
+    --bs-border-radius:      var(--radius-sm);
+
+    --bs-primary:            var(--color-primary);
+    --bs-primary-rgb:        178, 91, 73;
+    --bs-secondary-rgb:      124, 135, 121;
+    --bs-success-rgb:        110, 138, 111;
+    --bs-info-rgb:           76, 126, 126;
+    --bs-warning-rgb:        227, 180, 104;
+    --bs-danger-rgb:         181, 80, 63;
+
+    --bs-link-color:         var(--color-primary);
+    --bs-link-color-rgb:     178, 91, 73;
+    --bs-link-hover-color:   var(--color-primary-700);
 }
 
+/* ------------------------------------------------------------------ */
+/* 2. Base layout                                                      */
+/* ------------------------------------------------------------------ */
 body {
-    background-color: var(--color-bg);
+    background:
+            radial-gradient(1200px 600px at 80% -10%, var(--color-bg-2), transparent 60%),
+            var(--color-bg);
+    background-attachment: fixed;
     margin: 0;
+    color: var(--color-text);
+    font-family: var(--bs-body-font-family);
+    -webkit-font-smoothing: antialiased;
 }
 
 main {
     margin: 0 auto;
-    position: relative; /* Useful for absolute children like .img-background */
+    position: relative;
     min-height: 100vh;
-    overflow: hidden; /* Prevent background image from causing scrollbars */
+    overflow: hidden;
     color: var(--color-text);
+    padding-bottom: 3rem;
 }
 
-.img-background{
-    z-index: -1;
-    position: absolute;
-    top: 50%;
-    left: 70%; /* Changed from 66% to center it within main */
-    width: 66.66%; /* Changed from vw to % to be relative to main */
-    transform: translate(-50%, -50%);
-    filter: blur(20px);
-    -webkit-filter: blur(20px);
-    pointer-events: none; /* Ensure it doesn't interfere with clicks */
+/* Headings: editorial display serif */
+h1, h2, h3, h4, h5, .card-title, .navbar-brand {
+    font-family: "Fraunces", "Playfair Display", Georgia, serif;
+    letter-spacing: -0.01em;
 }
+
+/* Centered page titles get a small decorative vinyl underline */
+main > .container h1.text-center,
+main h1.text-center {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 2rem !important;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+main h1.text-center::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-amber));
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Decorative spinning vinyl background                             */
+/* ------------------------------------------------------------------ */
+.img-background {
+    z-index: -1;
+    position: fixed;
+    top: auto;
+    bottom: -22%;
+    left: auto;
+    right: -14%;
+    width: 46vw;
+    max-width: 720px;
+    transform: none;
+    opacity: 0.16;
+    filter: blur(2px);
+    -webkit-filter: blur(2px);
+    pointer-events: none;
+}
+.img-background img { width: 100%; height: auto; }
 
 @keyframes rotate-disc {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.rotate-animation-disc {
+    animation: rotate-disc 30s linear infinite;
+    transform-origin: center;
+}
 
-        .rotate-animation-disc {
-            animation: rotate-disc 30s infinite;
-            transform-origin: center;
-        }
-.navbar  {
-
+/* ------------------------------------------------------------------ */
+/* 4. Navbar                                                           */
+/* ------------------------------------------------------------------ */
+.navbar {
     margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    padding: 0.5rem 1rem;
+    backdrop-filter: blur(6px);
+}
+.navbar-brand {
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.navbar-brand:hover { color: var(--color-primary); }
+
+.navbar .nav-link {
+    color: var(--color-text);
+    font-weight: 500;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem !important;
+    transition: background-color var(--ease), color var(--ease);
+}
+.navbar .nav-link .navbar-text { color: inherit; }
+.navbar .nav-link:hover {
+    background-color: var(--color-surface-alt);
+    color: var(--color-primary);
+}
+.navbar .nav-link.active,
+.navbar .nav-link.active .navbar-text {
+    background-color: var(--color-primary);
+    color: #fff !important;
+}
+.navbar .nav-link.disabled { display: none; } /* hide leftover placeholder */
+
+.navbar .dropdown-menu {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    background: var(--color-surface);
+    padding: 0.4rem;
+}
+.navbar .dropdown-menu .nav-link { border-radius: var(--radius-sm); }
+.navbar .dropdown-menu .nav-link:hover { background: var(--color-surface-alt); }
+
+/* Search controls in navbar */
+.navbar .form-select,
+.navbar .form-control {
+    border-color: var(--color-border);
     background-color: var(--color-surface);
 }
 
-.navbar-text{
-    color: var(--color-text);
+/* ------------------------------------------------------------------ */
+/* 5. Cards                                                            */
+/* ------------------------------------------------------------------ */
+.card {
+    --bs-card-bg: var(--color-surface);
+    --bs-card-border-color: var(--color-border);
+    --bs-card-border-radius: var(--radius);
+    --bs-card-inner-border-radius: calc(var(--radius) - 1px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--ease), box-shadow var(--ease);
+    overflow: hidden;
+}
+/* Lift list cards on hover (only the grid cards, not the big detail panel) */
+.row .col > .card.h-100:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+.card.shadow { box-shadow: var(--shadow) !important; }
+
+.card-title { color: var(--color-primary-700); font-weight: 600; }
+.card-subtitle { color: var(--color-muted) !important; font-weight: 500; }
+
+.card-footer {
+    background: transparent;
+    border-top: 1px solid var(--color-border) !important;
+    padding-top: 0.85rem;
 }
 
-.navbar-container {
+/* Detail / form card headers (bg-* utilities recolored below) */
+.card-header {
+    border-bottom: 0;
+    padding: 1rem 1.25rem;
+    font-family: "Fraunces", Georgia, serif;
+}
+.card-header .card-title { color: inherit; }
 
+/* A thin accent rail on each list card's left edge */
+.row .col > .card.h-100 {
+    border-left: 4px solid var(--color-rose);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Buttons                                                          */
+/* ------------------------------------------------------------------ */
+.btn {
+    --bs-btn-font-weight: 600;
+    --bs-btn-border-radius: 999px;
+    border-radius: 999px;
+    transition: transform var(--ease), background-color var(--ease),
+    color var(--ease), box-shadow var(--ease);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-lg { --bs-btn-border-radius: var(--radius-sm); border-radius: var(--radius-sm); }
+
+/* Solid */
+.btn-primary {
+    --bs-btn-bg: var(--color-primary); --bs-btn-border-color: var(--color-primary);
+    --bs-btn-hover-bg: var(--color-primary-700); --bs-btn-hover-border-color: var(--color-primary-700);
+    --bs-btn-active-bg: var(--color-primary-700); --bs-btn-active-border-color: var(--color-primary-700);
+    --bs-btn-disabled-bg: var(--color-primary); --bs-btn-disabled-border-color: var(--color-primary);
+    --bs-btn-color: #fff; --bs-btn-hover-color: #fff; --bs-btn-active-color: #fff;
+}
+.btn-warning {
+    --bs-btn-bg: var(--color-amber); --bs-btn-border-color: var(--color-amber);
+    --bs-btn-hover-bg: var(--color-amber-700); --bs-btn-hover-border-color: var(--color-amber-700);
+    --bs-btn-active-bg: var(--color-amber-700); --bs-btn-active-border-color: var(--color-amber-700);
+    --bs-btn-color: #3a2f17; --bs-btn-hover-color: #fff; --bs-btn-active-color: #fff;
+}
+.btn-success {
+    --bs-btn-bg: var(--color-sage); --bs-btn-border-color: var(--color-sage);
+    --bs-btn-hover-bg: var(--color-sage-700); --bs-btn-hover-border-color: var(--color-sage-700);
+    --bs-btn-active-bg: var(--color-sage-700); --bs-btn-active-border-color: var(--color-sage-700);
+    --bs-btn-color: #fff; --bs-btn-hover-color: #fff;
+}
+.btn-info {
+    --bs-btn-bg: var(--color-teal); --bs-btn-border-color: var(--color-teal);
+    --bs-btn-hover-bg: var(--color-teal-700); --bs-btn-hover-border-color: var(--color-teal-700);
+    --bs-btn-color: #fff; --bs-btn-hover-color: #fff;
+}
+.btn-danger {
+    --bs-btn-bg: var(--color-danger); --bs-btn-border-color: var(--color-danger);
+    --bs-btn-hover-bg: var(--color-danger-700); --bs-btn-hover-border-color: var(--color-danger-700);
+    --bs-btn-color: #fff; --bs-btn-hover-color: #fff;
+}
+
+/* Outline */
+.btn-outline-primary {
+    --bs-btn-color: var(--color-primary); --bs-btn-border-color: var(--color-primary);
+    --bs-btn-hover-bg: var(--color-primary); --bs-btn-hover-border-color: var(--color-primary); --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--color-primary-700); --bs-btn-active-border-color: var(--color-primary-700);
+}
+.btn-outline-warning {
+    --bs-btn-color: var(--color-amber-700); --bs-btn-border-color: var(--color-amber);
+    --bs-btn-hover-bg: var(--color-amber); --bs-btn-hover-border-color: var(--color-amber); --bs-btn-hover-color: #3a2f17;
+}
+.btn-outline-success {
+    --bs-btn-color: var(--color-sage-700); --bs-btn-border-color: var(--color-sage);
+    --bs-btn-hover-bg: var(--color-sage); --bs-btn-hover-border-color: var(--color-sage); --bs-btn-hover-color: #fff;
+}
+.btn-outline-danger {
+    --bs-btn-color: var(--color-danger); --bs-btn-border-color: var(--color-danger);
+    --bs-btn-hover-bg: var(--color-danger); --bs-btn-hover-border-color: var(--color-danger); --bs-btn-hover-color: #fff;
+}
+.btn-outline-secondary {
+    --bs-btn-color: var(--color-secondary-700); --bs-btn-border-color: var(--color-secondary);
+    --bs-btn-hover-bg: var(--color-secondary); --bs-btn-hover-border-color: var(--color-secondary); --bs-btn-hover-color: #fff;
+}
+.btn-link { --bs-btn-color: var(--color-primary); --bs-btn-hover-color: var(--color-primary-700); }
+
+/* ------------------------------------------------------------------ */
+/* 7. Background / text utility recolors                               */
+/* ------------------------------------------------------------------ */
+.text-primary { color: var(--color-primary-700) !important; }
+.text-muted, .text-body-secondary { color: var(--color-muted) !important; }
+
+.bg-primary  { background-color: var(--color-primary) !important; }
+.bg-success  { background-color: var(--color-sage) !important; }
+.bg-info     { background-color: var(--color-teal) !important; }
+.bg-warning  { background-color: var(--color-amber) !important; }
+.bg-secondary{ background-color: var(--color-secondary) !important; }
+
+/* Badges */
+.badge.bg-secondary { background-color: var(--color-secondary) !important; }
+.badge { font-weight: 600; border-radius: 999px; padding: 0.35em 0.7em; }
+
+/* ------------------------------------------------------------------ */
+/* 8. Forms                                                            */
+/* ------------------------------------------------------------------ */
+.form-label { font-weight: 600; color: var(--color-text); }
+.form-control, .form-select {
+    border-color: var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    padding: 0.55rem 0.85rem;
+    transition: border-color var(--ease), box-shadow var(--ease);
+}
+.form-control::placeholder { color: #b7ad97; }
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(178, 91, 73, 0.18);
+    background-color: #fff;
+}
+.form-control:disabled, .form-select:disabled {
+    background-color: var(--color-surface-alt);
+    color: var(--color-muted);
+    opacity: 1;
+}
+.form-text { color: var(--color-muted); }
+.form-check-input:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.form-check-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(178, 91, 73, 0.18);
+}
+.form-switch .form-check-input:checked { background-color: var(--color-primary); }
+
+/* Tables inside detail/forms */
+.table { --bs-table-bg: transparent; }
+.table-bordered { --bs-border-color: var(--color-border); }
+.table > thead.table-light th,
+.table-light { --bs-table-bg: var(--color-surface-alt); color: var(--color-text); }
+
+/* ------------------------------------------------------------------ */
+/* 9. List groups                                                      */
+/* ------------------------------------------------------------------ */
+.list-group {
+    --bs-list-group-bg: var(--color-surface);
+    --bs-list-group-border-color: var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+.list-group-item {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+    transition: background-color var(--ease);
+}
+.list-group-item:hover { background-color: var(--color-surface-alt); }
+
+/* ------------------------------------------------------------------ */
+/* 10. Pagination                                                      */
+/* ------------------------------------------------------------------ */
+.pagination {
+    --bs-pagination-color: var(--color-primary);
+    --bs-pagination-bg: var(--color-surface);
+    --bs-pagination-border-color: var(--color-border);
+    --bs-pagination-hover-color: var(--color-primary-700);
+    --bs-pagination-hover-bg: var(--color-surface-alt);
+    --bs-pagination-hover-border-color: var(--color-border);
+    --bs-pagination-focus-color: var(--color-primary-700);
+    --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(178, 91, 73, 0.18);
+    --bs-pagination-active-bg: var(--color-primary);
+    --bs-pagination-active-border-color: var(--color-primary);
+    gap: 0.25rem;
+}
+.page-link { border-radius: var(--radius-sm) !important; }
+
+/* ------------------------------------------------------------------ */
+/* 11. Alerts                                                          */
+/* ------------------------------------------------------------------ */
+.alert { border-radius: var(--radius-sm); border: 1px solid transparent; }
+.alert-success { background: #eaf0e9; color: var(--color-sage-700); border-color: #d3e0d2; }
+.alert-warning { background: #fbf1da; color: var(--color-amber-700); border-color: #f0e0bd; }
+.alert-danger  { background: #f7e3df; color: var(--color-danger-700); border-color: #efcec8; }
+.alert-info    { background: #e3eded; color: var(--color-teal-700); border-color: #cfe0e0; }
+
+/* ------------------------------------------------------------------ */
+/* 12. Error pages                                                     */
+/* ------------------------------------------------------------------ */
+.display-1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ */
+/* 13. Reduced motion                                                  */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+    .rotate-animation-disc { animation: none; }
+    .btn, .card { transition: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Bootstrap helper bits retained from the original stylesheet         */
+/* ------------------------------------------------------------------ */
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg { font-size: 3.5rem; }
 }

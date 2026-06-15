@@ -1,7 +1,10 @@
 <div class="container-fluid d-flex justify-content-center">
     <nav class="navbar navbar-expand-lg rounded-3 col-11 mx-auto">
       <div class="container-fluid">
-        <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="Sakis Collection" width="30" height="30" class="logo rotate-animation-disc">
+        <a class="navbar-brand" href="{{ url_for('main.home') }}">
+          <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="Σάκης Collection" width="34" height="34" class="logo rotate-animation-disc">
+          <span>Σάκης Collection</span>
+        </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -25,7 +28,7 @@
                 {% set section = section_map.get(endpoint) %}
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text">Home</span></a>
+              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text"><i class="fa-solid fa-house me-1"></i>Home</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link{% if section == 'songs' %} active{% endif %}"{% if section == 'songs' %} aria-current="page"{% endif %} href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Songs</span></a>
@@ -42,9 +45,9 @@
             <li class="nav-item">
               <a class="nav-link{% if section == 'disk_labels' %} active{% endif %}"{% if section == 'disk_labels' %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Disk Labels</span></a>
             </li>
-            <li class="nav-item dropdown ">
+            <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="navbar-text">Add </span>
+                <span class="navbar-text"><i class="fa-solid fa-plus me-1"></i>Add</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="nav-item">
@@ -64,9 +67,6 @@
                 </li>
               </ul>
             </li>
-            <li class="nav-item">
-              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-            </li>
           </ul>
           <form class="d-flex" role="search" method="GET" action="{{ url_for('main.search') }}">
             <select class="form-select me-2 flex-shrink-0" name="type" aria-label="Search category" style="width: auto;">
@@ -78,7 +78,7 @@
               <option value="disk_labels" {% if request.args.get('type') == 'disk_labels' %}selected{% endif %}>Disk Labels</option>
             </select>
             <input class="form-control me-2" type="search" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search" aria-label="Search"/>
-            <button class="btn btn-outline-success" type="submit">Search</button>
+            <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
           </form>
         </div>
       </div>
