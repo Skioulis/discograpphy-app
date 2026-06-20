@@ -104,30 +104,31 @@ def home():
 
 PER_PAGE_CHOICES = [10, 20, 50, 100]
 
+# Each option maps a sort key to (label, column). The asc/desc direction is
+# chosen separately via the `dir` query arg, so every field can be sorted both
+# ways.
+SORT_DIRECTIONS = {'asc', 'desc'}
+DEFAULT_DIRECTION = 'desc'
+
 SONG_SORT_OPTIONS = {
-    'updated': ('Recently updated', lambda: Song.updated_at.desc()),
-    'name': ('Name (A–Z)', lambda: Song.title.asc()),
-    'oldest_updated': ('Least recently updated', lambda: Song.updated_at.asc()),
+    'updated': ('Last updated', lambda: Song.updated_at),
+    'name': ('Name', lambda: Song.title),
 }
 DISK_SORT_OPTIONS = {
-    'updated': ('Recently updated', lambda: Disk.updated_at.desc()),
-    'name': ('Name (A–Z)', lambda: Disk.name.asc()),
-    'oldest_updated': ('Least recently updated', lambda: Disk.updated_at.asc()),
+    'updated': ('Last updated', lambda: Disk.updated_at),
+    'name': ('Name', lambda: Disk.name),
 }
 PERSON_SORT_OPTIONS = {
-    'updated': ('Recently updated', lambda: Person.updated_at.desc()),
-    'name': ('Name (A–Z)', lambda: Person.name.asc()),
-    'oldest_updated': ('Least recently updated', lambda: Person.updated_at.asc()),
+    'updated': ('Last updated', lambda: Person.updated_at),
+    'name': ('Name', lambda: Person.name),
 }
 COMPANY_SORT_OPTIONS = {
-    'updated': ('Recently updated', lambda: Company.updated_at.desc()),
-    'name': ('Name (A–Z)', lambda: Company.name.asc()),
-    'oldest_updated': ('Least recently updated', lambda: Company.updated_at.asc()),
+    'updated': ('Last updated', lambda: Company.updated_at),
+    'name': ('Name', lambda: Company.name),
 }
 DISK_LABEL_SORT_OPTIONS = {
-    'updated': ('Recently updated', lambda: DiskLabel.updated_at.desc()),
-    'name': ('Name (A–Z)', lambda: DiskLabel.label.asc()),
-    'oldest_updated': ('Least recently updated', lambda: DiskLabel.updated_at.asc()),
+    'updated': ('Last updated', lambda: DiskLabel.updated_at),
+    'name': ('Name', lambda: DiskLabel.label),
 }
 
 
@@ -140,28 +141,32 @@ def _resolve_per_page():
 
 
 def _paginate(query, sort_options):
-    """Apply the requested sort + pagination from query args to a base query."""
+    """Apply the requested sort + direction + pagination from query args."""
     sort = request.args.get('sort', 'updated')
     if sort not in sort_options:
         sort = 'updated'
+    direction = request.args.get('dir', DEFAULT_DIRECTION)
+    if direction not in SORT_DIRECTIONS:
+        direction = DEFAULT_DIRECTION
     per_page = _resolve_per_page()
     page = request.args.get('page', 1, type=int)
-    ordered = query.order_by(sort_options[sort][1]())
+    column = sort_options[sort][1]()
+    ordered = query.order_by(column.asc() if direction == 'asc' else column.desc())
     pagination = ordered.paginate(page=page, per_page=per_page, error_out=False)
     # Clamp past-the-end requests (e.g. after deleting the last item on a page)
     # to the last valid page so the user never lands on an empty page.
     if pagination.pages and page > pagination.pages:
         pagination = ordered.paginate(page=pagination.pages, per_page=per_page, error_out=False)
-    return pagination, sort, per_page
+    return pagination, sort, direction, per_page
 
 
 @main_bp.route('/songs')
 def songs_list():
     query = Song.query.options(db.selectinload(Song.people).joinedload(PeopleSong.person))
-    pagination, sort, per_page = _paginate(query, SONG_SORT_OPTIONS)
+    pagination, sort, direction, per_page = _paginate(query, SONG_SORT_OPTIONS)
     return render_template(
         'songs_list.html', pagination=pagination, songs=pagination.items,
-        sort=sort, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
+        sort=sort, direction=direction, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
@@ -169,30 +174,30 @@ def songs_list():
 @main_bp.route('/disks')
 def disks_list():
     query = Disk.query.options(db.joinedload(Disk.company))
-    pagination, sort, per_page = _paginate(query, DISK_SORT_OPTIONS)
+    pagination, sort, direction, per_page = _paginate(query, DISK_SORT_OPTIONS)
     return render_template(
         'disks_list.html', pagination=pagination, disks=pagination.items,
-        sort=sort, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
+        sort=sort, direction=direction, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
 
 @main_bp.route('/persons')
 def persons_list():
-    pagination, sort, per_page = _paginate(Person.query, PERSON_SORT_OPTIONS)
+    pagination, sort, direction, per_page = _paginate(Person.query, PERSON_SORT_OPTIONS)
     return render_template(
         'persons_list.html', pagination=pagination, persons=pagination.items,
-        sort=sort, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
+        sort=sort, direction=direction, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
 
 @main_bp.route('/companies')
 def companies_list():
-    pagination, sort, per_page = _paginate(Company.query, COMPANY_SORT_OPTIONS)
+    pagination, sort, direction, per_page = _paginate(Company.query, COMPANY_SORT_OPTIONS)
     return render_template(
         'companies_list.html', pagination=pagination, companies=pagination.items,
-        sort=sort, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
+        sort=sort, direction=direction, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
@@ -200,10 +205,10 @@ def companies_list():
 @main_bp.route('/disk-labels')
 def disk_labels_list():
     query = DiskLabel.query.options(db.joinedload(DiskLabel.company))
-    pagination, sort, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
+    pagination, sort, direction, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
     return render_template(
         'disk_labels_list.html', pagination=pagination, labels=pagination.items,
-        sort=sort, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
+        sort=sort, direction=direction, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
     )
 
