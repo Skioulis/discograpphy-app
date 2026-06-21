@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} Server Error {% endblock %}
+{% block title %} Σφάλμα διακομιστή {% endblock %}
 {% block body %}
     <div class="text-center py-5">
         <h1 class="display-1 fw-bold text-danger">500</h1>
-        <p class="fs-4">Something went wrong</p>
-        <p class="text-muted">An unexpected error occurred. Please try again.</p>
-        <a href="{{ url_for('main.home') }}" class="btn btn-outline-primary mt-3">Back to Home</a>
+        <p class="fs-4">Κάτι πήγε στραβά</p>
+        <p class="text-muted">Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα. Δοκιμάστε ξανά.</p>
+        <a href="{{ url_for('main.home') }}" class="btn btn-outline-primary mt-3">Επιστροφή στην αρχική</a>
     </div>
 {% endblock %}
 

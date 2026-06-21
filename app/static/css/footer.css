@@ -1,11 +1,11 @@
 /* =====================================================================
-   Footer — refined, static (no longer fixed/overlapping), warm surface.
+   Footer — static, warm paper surface (Sakis Collection design system).
    ===================================================================== */
 
 footer {
-    border-top: 1px solid var(--color-border);
-    background-color: var(--color-surface);
-    color: var(--color-muted);
+    border-top: 1px solid var(--border-soft);
+    background-color: var(--surface-raised);
+    color: var(--ink-500);
     margin-top: 2rem;
     padding: 1rem 0;
 }
@@ -14,7 +14,7 @@ footer .container { max-width: 1200px; }
 
 footer,
 footer .text-body-secondary {
-    color: var(--color-muted) !important;
+    color: var(--ink-500) !important;
     font-size: 0.9rem;
 }
 
@@ -36,23 +36,23 @@ footer a[aria-label="Home"] {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    color: var(--color-muted);
+    color: var(--ink-500);
 }
 footer .nav .ms-3 a:hover,
 footer a[aria-label="Home"]:hover {
     transform: scale(1.12);
-    background-color: var(--color-surface-alt);
+    background-color: var(--sage-100);
 }
 
-footer a[aria-label="email"]:hover  { color: var(--color-email); }
-footer a[aria-label="linkedin"]:hover { color: var(--color-linkedIn); }
-footer a[aria-label="github"]:hover { color: var(--color-github); }
-footer a[aria-label="Home"]:hover   { color: var(--color-primary); }
+footer a[aria-label="email"]:hover  { color: var(--status-email); }
+footer a[aria-label="linkedin"]:hover { color: var(--status-linkedin); }
+footer a[aria-label="github"]:hover { color: var(--status-github); }
+footer a[aria-label="Home"]:hover   { color: var(--rose-500); }
 
 footer a:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 3px;
     border-radius: 8px;
 }
 
-.copyright-symbol { color: var(--color-primary); }
+.copyright-symbol { color: var(--rose-500); }

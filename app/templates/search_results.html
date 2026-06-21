@@ -1,32 +1,41 @@
 {% extends 'base.html' %}
 {% block title %} Αναζήτηση {% endblock %}
 
+{% set type_labels = {
+    'everything': 'Όλα',
+    'songs': 'τραγούδια',
+    'disks': 'δίσκους',
+    'persons': 'πρόσωπα',
+    'companies': 'εταιρείες',
+    'disk_labels': 'ετικέτες'
+} %}
+
 {% macro view_all(category, data) %}
     {% if search_type == 'everything' and data.count > data['items']|length %}
-        <a href="{{ url_for('main.search', q=query, type=category) }}" class="btn btn-sm btn-link">View all {{ data.count }} →</a>
+        <a href="{{ url_for('main.search', q=query, type=category) }}" class="btn btn-sm btn-link">Όλα τα {{ data.count }} →</a>
     {% endif %}
 {% endmacro %}
 
 {% block body %}
-    <h1 class="mb-4 text-center">Search Results</h1>
+    <h1 class="mb-4 text-center">Αποτελέσματα αναζήτησης</h1>
 
     {% if not query %}
-        <p class="text-center text-muted">Type something in the search box to get started.</p>
+        <p class="text-center text-muted">Πληκτρολογήστε κάτι στο πεδίο αναζήτησης για να ξεκινήσετε.</p>
     {% else %}
         <p class="text-center text-muted mb-4">
-            {{ total }} result{{ '' if total == 1 else 's' }} for
-            <strong>"{{ query }}"</strong>
-            {% if search_type != 'everything' %} in {{ search_type }}{% endif %}
+            {{ total }} {{ 'αποτέλεσμα' if total == 1 else 'αποτελέσματα' }} για
+            <strong>«{{ query }}»</strong>
+            {% if search_type != 'everything' %} σε {{ type_labels.get(search_type, search_type) }}{% endif %}
         </p>
 
         {% if total == 0 %}
-            <div class="alert alert-warning text-center">No matches found.</div>
+            <div class="alert alert-warning text-center">Δεν βρέθηκαν αποτελέσματα.</div>
         {% endif %}
 
         {% set songs = results.get('songs') %}
         {% if songs and songs['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Songs <span class="badge bg-secondary">{{ songs.count }}</span></h3>
+                <h3 class="mb-0">Τραγούδια <span class="badge bg-secondary">{{ songs.count }}</span></h3>
                 {{ view_all('songs', songs) }}
             </div>
             <ul class="list-group my-3">
@@ -36,7 +45,7 @@
                             <strong>{{ song.title }}</strong>
                             {% if song.notes %}<small class="text-muted d-block">{{ song.notes }}</small>{% endif %}
                         </div>
-                        <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -45,7 +54,7 @@
         {% set disks = results.get('disks') %}
         {% if disks and disks['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Disks <span class="badge bg-secondary">{{ disks.count }}</span></h3>
+                <h3 class="mb-0">Δίσκοι <span class="badge bg-secondary">{{ disks.count }}</span></h3>
                 {{ view_all('disks', disks) }}
             </div>
             <ul class="list-group my-3">
@@ -53,10 +62,10 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{{ disk.name }}</strong>
-                            {% if disk.size %}<span class="text-muted"> — {{ disk.size }}</span>{% endif %}
+                            {% if disk.size %}<span class="text-muted"> — {{ disk.size }}″</span>{% endif %}
                             {% if disk.notes %}<small class="text-muted d-block">{{ disk.notes }}</small>{% endif %}
                         </div>
-                        <a href="{{ url_for('main.single_disk', disk_id=disk.disk_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('main.single_disk', disk_id=disk.disk_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -65,7 +74,7 @@
         {% set persons = results.get('persons') %}
         {% if persons and persons['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Persons <span class="badge bg-secondary">{{ persons.count }}</span></h3>
+                <h3 class="mb-0">Πρόσωπα <span class="badge bg-secondary">{{ persons.count }}</span></h3>
                 {{ view_all('persons', persons) }}
             </div>
             <ul class="list-group my-3">
@@ -75,7 +84,7 @@
                             <strong>{{ person.name }}</strong>
                             {% if person.notes %}<small class="text-muted d-block">{{ person.notes }}</small>{% endif %}
                         </div>
-                        <a href="{{ url_for('main.single_person', person_id=person.person_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('main.single_person', person_id=person.person_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -84,7 +93,7 @@
         {% set companies = results.get('companies') %}
         {% if companies and companies['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Companies <span class="badge bg-secondary">{{ companies.count }}</span></h3>
+                <h3 class="mb-0">Εταιρείες <span class="badge bg-secondary">{{ companies.count }}</span></h3>
                 {{ view_all('companies', companies) }}
             </div>
             <ul class="list-group my-3">
@@ -95,7 +104,7 @@
                             {% if company.labels_size %}<span class="text-muted"> — {{ company.labels_size }}</span>{% endif %}
                             {% if company.info %}<small class="text-muted d-block">{{ company.info }}</small>{% endif %}
                         </div>
-                        <a href="{{ url_for('main.single_company', company_id=company.company_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('main.single_company', company_id=company.company_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -104,7 +113,7 @@
         {% set disk_labels = results.get('disk_labels') %}
         {% if disk_labels and disk_labels['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Disk Labels <span class="badge bg-secondary">{{ disk_labels.count }}</span></h3>
+                <h3 class="mb-0">Ετικέτες <span class="badge bg-secondary">{{ disk_labels.count }}</span></h3>
                 {{ view_all('disk_labels', disk_labels) }}
             </div>
             <ul class="list-group my-3">
@@ -114,7 +123,7 @@
                             <strong>{{ label.label }}</strong>
                             {% if label.company %}<small class="text-muted d-block">{{ label.company.name }}</small>{% endif %}
                         </div>
-                        <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -122,10 +131,10 @@
 
         {# Pagination for a single-category search. #}
         {% if pagination and pagination.pages > 1 %}
-            <nav aria-label="Search pagination" class="mt-4">
+            <nav aria-label="Σελιδοποίηση αναζήτησης" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('main.search', q=query, type=search_type, per_page=per_page, page=pagination.prev_num) }}">Previous</a>
+                        <a class="page-link" href="{{ url_for('main.search', q=query, type=search_type, per_page=per_page, page=pagination.prev_num) }}">Προηγούμενη</a>
                     </li>
                     {% for p in pagination.iter_pages() %}
                         {% if p %}
@@ -137,7 +146,7 @@
                         {% endif %}
                     {% endfor %}
                     <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('main.search', q=query, type=search_type, per_page=per_page, page=pagination.next_num) }}">Next</a>
+                        <a class="page-link" href="{{ url_for('main.search', q=query, type=search_type, per_page=per_page, page=pagination.next_num) }}">Επόμενη</a>
                     </li>
                 </ul>
             </nav>

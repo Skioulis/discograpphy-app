@@ -2,8 +2,8 @@
     <nav class="navbar navbar-expand-lg rounded-3 col-11 mx-auto">
       <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('main.home') }}">
-          <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="Σάκης Collection" width="34" height="34" class="logo rotate-animation-disc">
-          <span>Σάκης Collection</span>
+          <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="Η συλλογή του Σάκη" width="34" height="34" class="logo rotate-animation-disc">
+          <span>Η συλλογή του Σάκη</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,56 +28,56 @@
                 {% set section = section_map.get(endpoint) %}
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text"><i class="fa-solid fa-house me-1"></i>Home</span></a>
+              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text"><i class="fa-solid fa-house me-1"></i>Αρχική</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'songs' %} active{% endif %}"{% if section == 'songs' %} aria-current="page"{% endif %} href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Songs</span></a>
+              <a class="nav-link{% if section == 'songs' %} active{% endif %}"{% if section == 'songs' %} aria-current="page"{% endif %} href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Τραγούδια</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'disks' %} active{% endif %}"{% if section == 'disks' %} aria-current="page"{% endif %} href="{{ url_for('main.disks_list') }}"><span class="navbar-text">Disks</span></a>
+              <a class="nav-link{% if section == 'disks' %} active{% endif %}"{% if section == 'disks' %} aria-current="page"{% endif %} href="{{ url_for('main.disks_list') }}"><span class="navbar-text">Δίσκοι</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'persons' %} active{% endif %}"{% if section == 'persons' %} aria-current="page"{% endif %} href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Persons</span></a>
+              <a class="nav-link{% if section == 'persons' %} active{% endif %}"{% if section == 'persons' %} aria-current="page"{% endif %} href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Πρόσωπα</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'companies' %} active{% endif %}"{% if section == 'companies' %} aria-current="page"{% endif %} href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Companies</span></a>
+              <a class="nav-link{% if section == 'companies' %} active{% endif %}"{% if section == 'companies' %} aria-current="page"{% endif %} href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Εταιρείες</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'disk_labels' %} active{% endif %}"{% if section == 'disk_labels' %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Disk Labels</span></a>
+              <a class="nav-link{% if section == 'disk_labels' %} active{% endif %}"{% if section == 'disk_labels' %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Ετικέτες</span></a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="navbar-text"><i class="fa-solid fa-plus me-1"></i>Add</span>
+                <span class="navbar-text"><i class="fa-solid fa-plus me-1"></i>Προσθήκη</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_disk') }}">Add Disk</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_disk') }}">Νέος δίσκος</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_company') }}">Add Company</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_company') }}">Νέα εταιρεία</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_disk_label') }}">Add Disk Label</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_disk_label') }}">Νέα ετικέτα</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_person') }}">Add Person</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_person') }}">Νέο πρόσωπο</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_song') }}">Add Song</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_song') }}">Νέο τραγούδι</a>
                 </li>
               </ul>
             </li>
           </ul>
           <form class="d-flex" role="search" method="GET" action="{{ url_for('main.search') }}">
-            <select class="form-select me-2 flex-shrink-0" name="type" aria-label="Search category" style="width: auto;">
-              <option value="everything" {% if request.args.get('type', 'everything') == 'everything' %}selected{% endif %}>Everything</option>
-              <option value="disks" {% if request.args.get('type') == 'disks' %}selected{% endif %}>Disks</option>
-              <option value="songs" {% if request.args.get('type') == 'songs' %}selected{% endif %}>Songs</option>
-              <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Persons</option>
-              <option value="companies" {% if request.args.get('type') == 'companies' %}selected{% endif %}>Companies</option>
-              <option value="disk_labels" {% if request.args.get('type') == 'disk_labels' %}selected{% endif %}>Disk Labels</option>
+            <select class="form-select me-2 flex-shrink-0" name="type" aria-label="Κατηγορία αναζήτησης" style="width: auto;">
+              <option value="everything" {% if request.args.get('type', 'everything') == 'everything' %}selected{% endif %}>Όλα</option>
+              <option value="disks" {% if request.args.get('type') == 'disks' %}selected{% endif %}>Δίσκοι</option>
+              <option value="songs" {% if request.args.get('type') == 'songs' %}selected{% endif %}>Τραγούδια</option>
+              <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Πρόσωπα</option>
+              <option value="companies" {% if request.args.get('type') == 'companies' %}selected{% endif %}>Εταιρείες</option>
+              <option value="disk_labels" {% if request.args.get('type') == 'disk_labels' %}selected{% endif %}>Ετικέτες</option>
             </select>
-            <input class="form-control me-2" type="search" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search" aria-label="Search"/>
+            <input class="form-control me-2" type="search" name="q" value="{{ request.args.get('q', '') }}" placeholder="Αναζήτηση…" aria-label="Αναζήτηση"/>
             <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
           </form>
         </div>

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} Add New Disk {% endblock %}
+{% block title %} Προσθήκη νέου δίσκου {% endblock %}
 {% block body %}
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">Add New Disk</h3>
+                    <h3 class="card-title mb-0">Προσθήκη νέου δίσκου</h3>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('main.add_disk') }}">
@@ -13,7 +13,7 @@
                         
                         <div class="mb-3">
                             {{ form.name.label(class="form-label") }}
-                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Enter disk name") }}
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Εισαγάγετε όνομα δίσκου") }}
                             {% for error in form.name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -37,7 +37,7 @@
                             </div>
                             <div class="col-md-6">
                                 {{ form.sakisid.label(class="form-label") }}
-                                {{ form.sakisid(class="form-control" + (" is-invalid" if form.sakisid.errors else ""), placeholder="Internal ID") }}
+                                {{ form.sakisid(class="form-control" + (" is-invalid" if form.sakisid.errors else ""), placeholder="Εσωτερικός κωδικός") }}
                                 {% for error in form.sakisid.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
@@ -46,7 +46,7 @@
 
                         <div class="mb-3">
                             {{ form.notes.label(class="form-label") }}
-                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes...") }}
+                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Επιπλέον σημειώσεις...") }}
                             {% for error in form.notes.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -54,7 +54,7 @@
 
                         <div class="d-grid gap-2">
                             {{ form.submit(class="btn btn-primary btn-lg") }}
-                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Άκυρο</a>
                         </div>
                     </form>
                 </div>

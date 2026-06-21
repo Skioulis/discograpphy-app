@@ -1,8 +1,45 @@
+{# Greek-alphabet filter: a row of pill chips (Όλα · Α–Ω · #) that filter a
+   listing by the first letter of its title/name. Chips are links that preserve
+   the current sort / direction / per_page. The signature interaction of the
+   Σάκης Collection design system. #}
+{% macro greek_alphabet_filter(endpoint, letter, greek_letters, available_letters, sort, direction, per_page) %}
+    <div class="greek-filter-panel">
+        <div class="greek-filter-head">
+            <span class="eyebrow">Αλφαβητικό φίλτρο</span>
+            {% if letter %}
+                <a class="btn btn-sm btn-outline-warning" href="{{ url_for(endpoint, sort=sort, dir=direction, per_page=per_page) }}">✕ Καθαρισμός</a>
+            {% endif %}
+        </div>
+        <div class="greek-filter" role="group" aria-label="Φίλτρο ελληνικού αλφαβήτου">
+            <a class="greek-chip greek-chip--all{% if not letter %} active{% endif %}"
+               {% if not letter %}aria-current="true"{% endif %}
+               href="{{ url_for(endpoint, sort=sort, dir=direction, per_page=per_page) }}">Όλα</a>
+            {% for l in greek_letters %}
+                {% if l in available_letters %}
+                    <a class="greek-chip{% if l == letter %} active{% endif %}"
+                       {% if l == letter %}aria-current="true"{% endif %}
+                       href="{{ url_for(endpoint, letter=l, sort=sort, dir=direction, per_page=per_page) }}">{{ l }}</a>
+                {% else %}
+                    <span class="greek-chip disabled" aria-disabled="true">{{ l }}</span>
+                {% endif %}
+            {% endfor %}
+            {% if '#' in available_letters %}
+                <a class="greek-chip{% if letter == '#' %} active{% endif %}"
+                   {% if letter == '#' %}aria-current="true"{% endif %}
+                   href="{{ url_for(endpoint, letter='#', sort=sort, dir=direction, per_page=per_page) }}">#</a>
+            {% else %}
+                <span class="greek-chip disabled" aria-disabled="true">#</span>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
 {# Order-by + direction + per-page controls for a listing page. #}
-{% macro list_controls(endpoint, sort, direction, per_page, sort_options, per_page_choices) %}
+{% macro list_controls(endpoint, sort, direction, per_page, sort_options, per_page_choices, letter=None) %}
     <form method="GET" action="{{ url_for(endpoint) }}" class="row g-2 justify-content-end align-items-end mb-4">
+        {% if letter %}<input type="hidden" name="letter" value="{{ letter }}">{% endif %}
         <div class="col-auto">
-            <label for="sort" class="form-label mb-0 small text-muted">Order by</label>
+            <label for="sort" class="form-label mb-0 small text-muted">Ταξινόμηση</label>
             <select id="sort" name="sort" class="form-select" onchange="this.form.submit()">
                 {% for value, (label, _) in sort_options.items() %}
                     <option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>
@@ -10,43 +47,43 @@
             </select>
         </div>
         <div class="col-auto">
-            <label for="dir" class="form-label mb-0 small text-muted">Direction</label>
+            <label for="dir" class="form-label mb-0 small text-muted">Φορά</label>
             <select id="dir" name="dir" class="form-select" onchange="this.form.submit()">
-                <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Ascending</option>
-                <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Descending</option>
+                <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Αύξουσα</option>
+                <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Φθίνουσα</option>
             </select>
         </div>
         <div class="col-auto">
-            <label for="per_page" class="form-label mb-0 small text-muted">Per page</label>
+            <label for="per_page" class="form-label mb-0 small text-muted">Ανά σελίδα</label>
             <select id="per_page" name="per_page" class="form-select" onchange="this.form.submit()">
                 {% for choice in per_page_choices %}
                     <option value="{{ choice }}" {% if choice == per_page %}selected{% endif %}>{{ choice }}</option>
                 {% endfor %}
             </select>
         </div>
-        <noscript><div class="col-auto"><button type="submit" class="btn btn-outline-success">Apply</button></div></noscript>
+        <noscript><div class="col-auto"><button type="submit" class="btn btn-outline-success">Εφαρμογή</button></div></noscript>
     </form>
 {% endmacro %}
 
-{# Bootstrap pagination nav, preserving sort + direction + per_page across pages. #}
-{% macro pagination_nav(endpoint, pagination, sort, direction, per_page) %}
+{# Bootstrap pagination nav, preserving letter + sort + direction + per_page across pages. #}
+{% macro pagination_nav(endpoint, pagination, sort, direction, per_page, letter=None) %}
     {% if pagination.pages > 1 %}
-        <nav aria-label="Pagination" class="mt-4">
+        <nav aria-label="Σελιδοποίηση" class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, sort=sort, dir=direction, per_page=per_page) }}">Previous</a>
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, letter=letter, sort=sort, dir=direction, per_page=per_page) }}">Προηγούμενη</a>
                 </li>
                 {% for p in pagination.iter_pages() %}
                     {% if p %}
                         <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for(endpoint, page=p, sort=sort, dir=direction, per_page=per_page) }}">{{ p }}</a>
+                            <a class="page-link" href="{{ url_for(endpoint, page=p, letter=letter, sort=sort, dir=direction, per_page=per_page) }}">{{ p }}</a>
                         </li>
                     {% else %}
                         <li class="page-item disabled"><span class="page-link">…</span></li>
                     {% endif %}
                 {% endfor %}
                 <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, sort=sort, dir=direction, per_page=per_page) }}">Next</a>
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, letter=letter, sort=sort, dir=direction, per_page=per_page) }}">Επόμενη</a>
                 </li>
             </ul>
         </nav>

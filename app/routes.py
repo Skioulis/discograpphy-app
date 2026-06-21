@@ -1,3 +1,4 @@
+import unicodedata
 from urllib.parse import urlparse
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request
@@ -111,24 +112,24 @@ SORT_DIRECTIONS = {'asc', 'desc'}
 DEFAULT_DIRECTION = 'desc'
 
 SONG_SORT_OPTIONS = {
-    'updated': ('Last updated', lambda: Song.updated_at),
-    'name': ('Name', lambda: Song.title),
+    'updated': ('Τελευταία ενημέρωση', lambda: Song.updated_at),
+    'name': ('Τίτλος', lambda: Song.title),
 }
 DISK_SORT_OPTIONS = {
-    'updated': ('Last updated', lambda: Disk.updated_at),
-    'name': ('Name', lambda: Disk.name),
+    'updated': ('Τελευταία ενημέρωση', lambda: Disk.updated_at),
+    'name': ('Όνομα', lambda: Disk.name),
 }
 PERSON_SORT_OPTIONS = {
-    'updated': ('Last updated', lambda: Person.updated_at),
-    'name': ('Name', lambda: Person.name),
+    'updated': ('Τελευταία ενημέρωση', lambda: Person.updated_at),
+    'name': ('Όνομα', lambda: Person.name),
 }
 COMPANY_SORT_OPTIONS = {
-    'updated': ('Last updated', lambda: Company.updated_at),
-    'name': ('Name', lambda: Company.name),
+    'updated': ('Τελευταία ενημέρωση', lambda: Company.updated_at),
+    'name': ('Όνομα', lambda: Company.name),
 }
 DISK_LABEL_SORT_OPTIONS = {
-    'updated': ('Last updated', lambda: DiskLabel.updated_at),
-    'name': ('Name', lambda: DiskLabel.label),
+    'updated': ('Τελευταία ενημέρωση', lambda: DiskLabel.updated_at),
+    'name': ('Όνομα', lambda: DiskLabel.label),
 }
 
 
@@ -138,6 +139,72 @@ def _resolve_per_page():
     except (TypeError, ValueError):
         per_page = 10
     return per_page if per_page in PER_PAGE_CHOICES else 10
+
+
+# ---------------------------------------------------------------------------
+# Greek alphabet filter
+# The catalogue lists can be filtered to entries whose title/name starts with
+# a given Greek letter. Accents and dialytika fold onto the base letter
+# (Άνοιξε → Α), and a '#' bucket catches everything that doesn't start with a
+# Greek letter (Latin titles, digits, punctuation).
+# ---------------------------------------------------------------------------
+GREEK_LETTERS = ['Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ',
+                 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω']
+
+# Accented / dialytika capital variants that fold onto each base letter. Used
+# to build prefix matches; ILIKE makes the match case-insensitive so the
+# lowercase forms (ά, ϊ, …) are covered too.
+_GREEK_VARIANTS = {
+    'Α': ['Α', 'Ά'],
+    'Ε': ['Ε', 'Έ'],
+    'Η': ['Η', 'Ή'],
+    'Ι': ['Ι', 'Ί', 'Ϊ'],
+    'Ο': ['Ο', 'Ό'],
+    'Υ': ['Υ', 'Ύ', 'Ϋ'],
+    'Ω': ['Ω', 'Ώ'],
+}
+
+
+def _letter_variants(letter):
+    return _GREEK_VARIANTS.get(letter, [letter])
+
+
+def _fold_first_letter(text):
+    """Fold the first character of a title/name to a base Greek capital, or
+    '#' when it is not a Greek letter."""
+    if not text:
+        return '#'
+    ch = text.strip()[:1].upper()
+    if not ch:
+        return '#'
+    base = unicodedata.normalize('NFD', ch)[0]
+    return base if base in GREEK_LETTERS else '#'
+
+
+def _resolve_letter():
+    """Validate the requested ?letter= against the known buckets."""
+    letter = request.args.get('letter')
+    if letter in GREEK_LETTERS or letter == '#':
+        return letter
+    return None
+
+
+def _available_letters(column):
+    """Set of buckets (Greek letters and/or '#') that actually have entries,
+    so the UI can dim letters that lead nowhere."""
+    rows = db.session.query(func.substr(column, 1, 1)).distinct().all()
+    return {_fold_first_letter(ch) for (ch,) in rows}
+
+
+def _apply_letter_filter(query, column, letter):
+    if not letter:
+        return query
+    if letter == '#':
+        prefixes = [p for base in GREEK_LETTERS for p in _letter_variants(base)]
+        conditions = [column.ilike(f'{p}%') for p in prefixes]
+        return query.filter(column.isnot(None), ~or_(*conditions))
+    conditions = [column.ilike(f'{p}%') for p in _letter_variants(letter)]
+    return query.filter(or_(*conditions))
 
 
 def _paginate(query, sort_options):
@@ -163,53 +230,73 @@ def _paginate(query, sort_options):
 @main_bp.route('/songs')
 def songs_list():
     query = Song.query.options(db.selectinload(Song.people).joinedload(PeopleSong.person))
+    letter = _resolve_letter()
+    available_letters = _available_letters(Song.title)
+    query = _apply_letter_filter(query, Song.title, letter)
     pagination, sort, direction, per_page = _paginate(query, SONG_SORT_OPTIONS)
     return render_template(
         'songs_list.html', pagination=pagination, songs=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
+        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
     )
 
 
 @main_bp.route('/disks')
 def disks_list():
     query = Disk.query.options(db.joinedload(Disk.company))
+    letter = _resolve_letter()
+    available_letters = _available_letters(Disk.name)
+    query = _apply_letter_filter(query, Disk.name, letter)
     pagination, sort, direction, per_page = _paginate(query, DISK_SORT_OPTIONS)
     return render_template(
         'disks_list.html', pagination=pagination, disks=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
+        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
     )
 
 
 @main_bp.route('/persons')
 def persons_list():
-    pagination, sort, direction, per_page = _paginate(Person.query, PERSON_SORT_OPTIONS)
+    letter = _resolve_letter()
+    available_letters = _available_letters(Person.name)
+    query = _apply_letter_filter(Person.query, Person.name, letter)
+    pagination, sort, direction, per_page = _paginate(query, PERSON_SORT_OPTIONS)
     return render_template(
         'persons_list.html', pagination=pagination, persons=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
+        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
     )
 
 
 @main_bp.route('/companies')
 def companies_list():
-    pagination, sort, direction, per_page = _paginate(Company.query, COMPANY_SORT_OPTIONS)
+    letter = _resolve_letter()
+    available_letters = _available_letters(Company.name)
+    query = _apply_letter_filter(Company.query, Company.name, letter)
+    pagination, sort, direction, per_page = _paginate(query, COMPANY_SORT_OPTIONS)
     return render_template(
         'companies_list.html', pagination=pagination, companies=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
+        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
     )
 
 
 @main_bp.route('/disk-labels')
 def disk_labels_list():
     query = DiskLabel.query.options(db.joinedload(DiskLabel.company))
+    letter = _resolve_letter()
+    available_letters = _available_letters(DiskLabel.label)
+    query = _apply_letter_filter(query, DiskLabel.label, letter)
     pagination, sort, direction, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
     return render_template(
         'disk_labels_list.html', pagination=pagination, labels=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
+        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
     )
 
 
@@ -229,7 +316,7 @@ def add_disk():
         )
         db.session.add(new_disk)
         db.session.commit()
-        flash('Disk added successfully!', 'success')
+        flash('Ο δίσκος προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_disk.html', form=form)
 
@@ -244,7 +331,7 @@ def add_company():
         )
         db.session.add(new_company)
         db.session.commit()
-        flash('Company added successfully!', 'success')
+        flash('Η εταιρεία προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_company.html', form=form)
 
@@ -261,7 +348,7 @@ def add_disk_label():
         )
         db.session.add(new_label)
         db.session.commit()
-        flash('Disk Label added successfully!', 'success')
+        flash('Η ετικέτα προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_disk_label.html', form=form)
 
@@ -276,7 +363,7 @@ def add_person():
         )
         db.session.add(new_person)
         db.session.commit()
-        flash('Person added successfully!', 'success')
+        flash('Το πρόσωπο προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_person.html', form=form)
 
@@ -313,7 +400,7 @@ def add_song():
 
         db.session.add(new_song)
         db.session.commit()
-        flash('Song added successfully!', 'success')
+        flash('Το τραγούδι προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_song.html', form=form, all_persons=all_persons, all_disks=all_disks)
 
@@ -361,7 +448,7 @@ def save_song(song_id):
         db.session.add(PeopleSong(person=person, song=song, **roles))
 
     db.session.commit()
-    flash('Song updated successfully!', 'success')
+    flash('Το τραγούδι ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_song', song_id=song.song_id))
 
 
@@ -374,7 +461,7 @@ def delete_song(song_id):
     db.session.delete(song)
     db.session.commit()
 
-    flash('Song deleted successfully!', 'success')
+    flash('Το τραγούδι διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -416,7 +503,7 @@ def save_disk(disk_id):
     disk.sakisid = form.sakisid.data
     disk.notes = form.notes.data
     db.session.commit()
-    flash('Disk updated successfully!', 'success')
+    flash('Ο δίσκος ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_disk', disk_id=disk.disk_id))
 
 
@@ -426,7 +513,7 @@ def delete_disk(disk_id):
     disk.songs.clear()
     db.session.delete(disk)
     db.session.commit()
-    flash('Disk deleted successfully!', 'success')
+    flash('Ο δίσκος διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -456,7 +543,7 @@ def save_person(person_id):
     person.name = form.name.data
     person.notes = form.notes.data
     db.session.commit()
-    flash('Person updated successfully!', 'success')
+    flash('Το πρόσωπο ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_person', person_id=person.person_id))
 
 
@@ -466,7 +553,7 @@ def delete_person(person_id):
     PeopleSong.query.filter_by(person_id=person.person_id).delete(synchronize_session=False)
     db.session.delete(person)
     db.session.commit()
-    flash('Person deleted successfully!', 'success')
+    flash('Το πρόσωπο διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -507,12 +594,12 @@ def save_company(company_id):
 def delete_company(company_id):
     company = _load_company(company_id)
     if company.disks or company.labels:
-        flash('Cannot delete a company that still has disks or labels linked to it.', 'warning')
+        flash('Δεν είναι δυνατή η διαγραφή εταιρείας που έχει συνδεδεμένους δίσκους ή ετικέτες.', 'warning')
         return redirect(url_for('main.single_company', company_id=company.company_id))
 
     db.session.delete(company)
     db.session.commit()
-    flash('Company deleted successfully!', 'success')
+    flash('Η εταιρεία διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 
@@ -544,7 +631,7 @@ def save_disk_label(label_id):
     label.label = form.label.data
     label.company_id = form.company_id.data
     db.session.commit()
-    flash('Disk Label updated successfully!', 'success')
+    flash('Η ετικέτα ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_disk_label', label_id=label.label_id))
 
 
@@ -553,7 +640,7 @@ def delete_disk_label(label_id):
     label = DiskLabel.query.get_or_404(label_id)
     db.session.delete(label)
     db.session.commit()
-    flash('Disk Label deleted successfully!', 'success')
+    flash('Η ετικέτα διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %} Add New Song {% endblock %}
+{% block title %} Προσθήκη νέου τραγουδιού {% endblock %}
 {% block body %}
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
-                    <h3 class="card-title mb-0">Add New Song</h3>
+                    <h3 class="card-title mb-0">Προσθήκη νέου τραγουδιού</h3>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('main.add_song') }}">
@@ -13,7 +13,7 @@
                         
                         <div class="mb-3">
                             {{ form.title.label(class="form-label") }}
-                            {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), placeholder="Enter song title") }}
+                            {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), placeholder="Εισαγάγετε τίτλο τραγουδιού") }}
                             {% for error in form.title.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -21,11 +21,11 @@
 
                         <div class="mb-3">
                             {{ form.disk_name.label(class="form-label") }}
-                            {{ form.disk_name(class="form-control" + (" is-invalid" if form.disk_name.errors else ""), list="disks-datalist", placeholder="Search available disks...") }}
+                            {{ form.disk_name(class="form-control" + (" is-invalid" if form.disk_name.errors else ""), list="disks-datalist", placeholder="Αναζήτηση διαθέσιμων δίσκων...") }}
                             {% for error in form.disk_name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Optional: Link this song to a disk now.</div>
+                            <div class="form-text">Προαιρετικό: Συνδέστε αυτό το τραγούδι με έναν δίσκο τώρα.</div>
                         </div>
 
                         <datalist id="disks-datalist">
@@ -35,13 +35,13 @@
                         </datalist>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Persons & Roles</label>
+                            <label class="form-label fw-bold">Πρόσωπα & ρόλοι</label>
                             <div class="table-responsive">
                                 <table class="table table-bordered align-middle" id="persons-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col">Person</th>
-                                            <th scope="col">Roles</th>
+                                            <th scope="col">Πρόσωπο</th>
+                                            <th scope="col">Ρόλοι</th>
                                             <th scope="col" style="width: 50px;"></th>
                                         </tr>
                                     </thead>
@@ -49,7 +49,7 @@
                                         {% for person_form in form.persons %}
                                         <tr class="person-row">
                                             <td>
-                                                {{ person_form.person_name(class="form-control", list="persons-datalist", placeholder="Search or add person...") }}
+                                                {{ person_form.person_name(class="form-control", list="persons-datalist", placeholder="Αναζήτηση ή προσθήκη προσώπου...") }}
                                                 {% for error in person_form.person_name.errors %}
                                                     <div class="invalid-feedback d-block">{{ error }}</div>
                                                 {% endfor %}
@@ -93,7 +93,7 @@
 
                         <div class="mb-3">
                             {{ form.lyrics.label(class="form-label") }}
-                            {{ form.lyrics(class="form-control" + (" is-invalid" if form.lyrics.errors else ""), rows="6", placeholder="Enter song lyrics...") }}
+                            {{ form.lyrics(class="form-control" + (" is-invalid" if form.lyrics.errors else ""), rows="6", placeholder="Εισαγάγετε στίχους τραγουδιού...") }}
                             {% for error in form.lyrics.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -101,7 +101,7 @@
 
                         <div class="mb-3">
                             {{ form.notes.label(class="form-label") }}
-                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Extra notes or info...") }}
+                            {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows="4", placeholder="Επιπλέον σημειώσεις ή πληροφορίες...") }}
                             {% for error in form.notes.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -109,7 +109,7 @@
 
                         <div class="d-grid gap-2">
                             {{ form.submit(class="btn btn-warning btn-lg") }}
-                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Άκυρο</a>
                         </div>
                     </form>
                 </div>

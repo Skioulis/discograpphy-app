@@ -1,63 +1,52 @@
 {% extends 'base.html' %}
 {% block title %} Η συλλογή του Σάκη {% endblock %}
 {% block body %}
-    <header class="text-center mb-5">
-        <p class="text-uppercase text-muted mb-2" style="letter-spacing: .25em; font-size: .8rem;">The collection of Σάκης</p>
-        <h1 class="display-4 mb-3" style="font-family: 'Fraunces', Georgia, serif; font-weight: 600;">A record collection, catalogued</h1>
-        <p class="text-muted mb-4 mx-auto" style="max-width: 560px;">
-            Songs, disks, the people who made them, the companies that released them and their labels — browse, search and keep it all in order.
-        </p>
-        <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <a href="{{ url_for('main.disks_list') }}" class="btn btn-primary"><i class="fa-solid fa-compact-disc me-2"></i>Browse disks</a>
-            <a href="{{ url_for('main.songs_list') }}" class="btn btn-outline-secondary">Browse songs</a>
-            <a href="{{ url_for('main.add_disk') }}" class="btn btn-outline-success"><i class="fa-solid fa-plus me-2"></i>Add a record</a>
+    <header class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-4 text-center text-md-start mb-5">
+        <img src="{{ url_for('static', filename='images/bg-img-2.png') }}" alt="" width="96" height="96"
+             class="rotate-animation-disc flex-shrink-0" style="box-shadow: var(--shadow-disc);">
+        <div>
+            <p class="eyebrow mb-2">Μια προσωπική συλλογή βινυλίου</p>
+            <h1 class="display-5 mb-3" style="font-weight: 900;">Η συλλογή του Σάκη</h1>
+            <p class="text-muted mb-4 mx-auto mx-md-0" style="max-width: 560px;">
+                Τραγούδια, δίσκοι, τα πρόσωπα που τα δημιούργησαν, οι εταιρείες που τα κυκλοφόρησαν και οι ετικέτες τους — περιηγηθείτε, αναζητήστε και κρατήστε τα όλα σε τάξη.
+            </p>
+            <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                <a href="{{ url_for('main.disks_list') }}" class="btn btn-primary"><i class="fa-solid fa-compact-disc me-2"></i>Δίσκοι</a>
+                <a href="{{ url_for('main.songs_list') }}" class="btn btn-outline-secondary">Τραγούδια</a>
+                <a href="{{ url_for('main.add_disk') }}" class="btn btn-outline-success"><i class="fa-solid fa-plus me-2"></i>Νέα εγγραφή</a>
+            </div>
         </div>
     </header>
 
-    <h2 class="h4 mb-4 text-center"><i class="fa-solid fa-music me-2 text-primary"></i>A few songs from the collection</h2>
+    <h2 class="h4 mb-4 text-center"><i class="fa-solid fa-music me-2 text-primary"></i>Μερικά τραγούδια από τη συλλογή</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4">
         {% for song in songs %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">{{ song.title }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Συντελεστές</h6>
+                        <h5 class="card-title">{{ song.title }}</h5>
+                        <h6 class="card-subtitle eyebrow mb-2">Συντελεστές</h6>
                         <ul class="list-unstyled text-muted small mb-2">
                             {% for ps in song.people %}
                                 {% set roles = [] %}
-                                {% if ps.isComposer %}
-                                    {% set roles = roles + ['Composer'] %}
-                                {% endif %}
-                                {% if ps.isSongwriter %}
-                                    {% set roles = roles + ['Writer'] %}
-                                {% endif %}
-                                {% if ps.isSinger %}
-                                    {% set roles = roles + ['Singer'] %}
-                                {% endif %}
-                                {% if ps.isMusician %}
-                                    {% set roles = roles + ['Musician'] %}
-                                {% endif %}
-
+                                {% if ps.isComposer %}{% set roles = roles + ['Σύνθεση'] %}{% endif %}
+                                {% if ps.isSongwriter %}{% set roles = roles + ['Στίχοι'] %}{% endif %}
+                                {% if ps.isSinger %}{% set roles = roles + ['Ερμηνεία'] %}{% endif %}
+                                {% if ps.isMusician %}{% set roles = roles + ['Μουσικός'] %}{% endif %}
                                 <li>
                                     <strong>{{ ps.person.name }}</strong>
-                                    {% if roles %}
-                                        : {{ roles|join(', ') }}
-                                    {% else %}
-                                        : No roles
-                                    {% endif %}
+                                    {% if roles %} · {{ roles|join(', ') }}{% endif %}
                                 </li>
                             {% else %}
-                                <li>Unknown Artist</li>
+                                <li>Άγνωστος καλλιτέχνης</li>
                             {% endfor %}
                         </ul>
-                        <p class="card-text">
-                            {% if song.notes %}
-                                <small class="text-truncate d-block" style="max-width: 100%;">{{ song.notes }}</small>
-                            {% endif %}
-                        </p>
+                        {% if song.notes %}
+                            <p class="card-text"><small class="text-truncate d-block" style="max-width: 100%;">{{ song.notes }}</small></p>
+                        {% endif %}
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
-                        <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                     </div>
                 </div>
             </div>

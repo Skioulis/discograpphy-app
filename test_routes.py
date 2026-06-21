@@ -63,7 +63,7 @@ class RoutesTestCase(unittest.TestCase):
     def test_search_empty_query(self):
         r = self.client.get('/search')
         self.assertEqual(r.status_code, 200)
-        self.assertIn(b'get started', r.data)
+        self.assertIn('για να ξεκινήσετε'.encode(), r.data)
 
     def test_search_everything_finds_across_types(self):
         r = self.client.get('/search?q=a&type=everything')
@@ -82,7 +82,7 @@ class RoutesTestCase(unittest.TestCase):
             db.session.commit()
         r = self.client.get('/search?q=Preview&type=everything')
         self.assertEqual(r.status_code, 200)
-        self.assertIn(b'View all', r.data)  # more than the preview cap
+        self.assertIn('Όλα τα'.encode(), r.data)  # "view all" link, more than the preview cap
 
     def test_search_specific_type_paginates(self):
         with self.app.app_context():
@@ -91,7 +91,7 @@ class RoutesTestCase(unittest.TestCase):
             db.session.commit()
         r = self.client.get('/search?q=Page&type=persons&per_page=10')
         self.assertEqual(r.status_code, 200)
-        self.assertIn(b'Search pagination', r.data)
+        self.assertIn('Σελιδοποίηση αναζήτησης'.encode(), r.data)
 
     # ---- create ----
     def test_add_company(self):
@@ -131,7 +131,7 @@ class RoutesTestCase(unittest.TestCase):
         r = self.client.post(f'/persons/{self.person_id}/save',
                              data={'name': 'Other Person', 'notes': ''})
         self.assertEqual(r.status_code, 400)
-        self.assertIn(b'already exists', r.data)
+        self.assertIn('Υπάρχει ήδη πρόσωπο'.encode(), r.data)
 
     def test_save_disk_updates_integer_size(self):
         r = self.client.post(f'/disks/{self.disk_id}/save', data={
@@ -172,7 +172,7 @@ class RoutesTestCase(unittest.TestCase):
     def test_delete_company_blocked_when_has_dependents(self):
         r = self.client.post(f'/companies/{self.company_id}/delete', follow_redirects=True)
         self.assertIn(b'alert-warning', r.data)
-        self.assertIn(b'Cannot delete', r.data)
+        self.assertIn('Δεν είναι δυνατή η διαγραφή'.encode(), r.data)
         with self.app.app_context():
             self.assertIsNotNone(db.session.get(Company, self.company_id))
 
@@ -227,7 +227,7 @@ class RoutesTestCase(unittest.TestCase):
     def test_404_page(self):
         r = self.client.get('/songs/999999')
         self.assertEqual(r.status_code, 404)
-        self.assertIn(b'Page not found', r.data)
+        self.assertIn('Η σελίδα δεν βρέθηκε'.encode(), r.data)
 
     # ---- add_song with duplicate person names merges roles ----
     def test_add_song_merges_duplicate_person_rows(self):

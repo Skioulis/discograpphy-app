@@ -1,37 +1,39 @@
 {% extends 'base.html' %}
 {% import 'partials/_list_macros.html' as listm %}
-{% block title %} Songs {% endblock %}
+{% block title %} Τραγούδια {% endblock %}
 {% block body %}
-    <h1 class="mb-4 text-center">Songs</h1>
+    <h1 class="mb-4 text-center">Τραγούδια</h1>
 
-    {{ listm.list_controls('main.songs_list', sort, direction, per_page, sort_options, per_page_choices) }}
+    {{ listm.greek_alphabet_filter('main.songs_list', letter, greek_letters, available_letters, sort, direction, per_page) }}
+
+    {{ listm.list_controls('main.songs_list', sort, direction, per_page, sort_options, per_page_choices, letter) }}
 
     {% if not songs %}
-        <p class="text-center text-muted">No songs found.</p>
+        <p class="text-center text-muted">Δεν βρέθηκαν τραγούδια.</p>
     {% else %}
         <p class="text-center text-muted small mb-3">
-            Showing {{ songs|length }} of {{ pagination.total }} song{{ '' if pagination.total == 1 else 's' }}
+            Εμφάνιση {{ songs|length }} από {{ pagination.total }} {{ 'τραγούδι' if pagination.total == 1 else 'τραγούδια' }}
         </p>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4">
             {% for song in songs %}
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title text-primary">{{ song.title }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Συντελεστές</h6>
+                            <h5 class="card-title">{{ song.title }}</h5>
+                            <h6 class="card-subtitle eyebrow mb-2">Συντελεστές</h6>
                             <ul class="list-unstyled text-muted small mb-2">
                                 {% for ps in song.people %}
                                     {% set roles = [] %}
-                                    {% if ps.isComposer %}{% set roles = roles + ['Composer'] %}{% endif %}
-                                    {% if ps.isSongwriter %}{% set roles = roles + ['Writer'] %}{% endif %}
-                                    {% if ps.isSinger %}{% set roles = roles + ['Singer'] %}{% endif %}
-                                    {% if ps.isMusician %}{% set roles = roles + ['Musician'] %}{% endif %}
+                                    {% if ps.isComposer %}{% set roles = roles + ['Σύνθεση'] %}{% endif %}
+                                    {% if ps.isSongwriter %}{% set roles = roles + ['Στίχοι'] %}{% endif %}
+                                    {% if ps.isSinger %}{% set roles = roles + ['Ερμηνεία'] %}{% endif %}
+                                    {% if ps.isMusician %}{% set roles = roles + ['Μουσικός'] %}{% endif %}
                                     <li>
                                         <strong>{{ ps.person.name }}</strong>
-                                        {% if roles %}: {{ roles|join(', ') }}{% else %}: No roles{% endif %}
+                                        {% if roles %} · {{ roles|join(', ') }}{% endif %}
                                     </li>
                                 {% else %}
-                                    <li>Unknown Artist</li>
+                                    <li>Άγνωστος καλλιτέχνης</li>
                                 {% endfor %}
                             </ul>
                             {% if song.notes %}
@@ -39,12 +41,12 @@
                             {% endif %}
                         </div>
                         <div class="card-footer bg-transparent border-top-0 d-flex gap-2 align-items-center">
-                            <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">View</a>
-                            <a href="{{ url_for('main.single_song', song_id=song.song_id, edit=1) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                            <form method="POST" action="{{ url_for('main.delete_song', song_id=song.song_id) }}" onsubmit="return confirm('Are you sure you want to delete this song?');" class="ms-auto m-0">
+                            <a href="{{ url_for('main.single_song', song_id=song.song_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
+                            <a href="{{ url_for('main.single_song', song_id=song.song_id, edit=1) }}" class="btn btn-sm btn-outline-warning">Επεξεργασία</a>
+                            <form method="POST" action="{{ url_for('main.delete_song', song_id=song.song_id) }}" onsubmit="return confirm('Σίγουρα θέλετε να διαγράψετε αυτό το τραγούδι;');" class="ms-auto m-0">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <input type="hidden" name="next" value="{{ url_for('main.songs_list', sort=sort, dir=direction, per_page=per_page, page=pagination.page) }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                <input type="hidden" name="next" value="{{ url_for('main.songs_list', letter=letter, sort=sort, dir=direction, per_page=per_page, page=pagination.page) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Διαγραφή</button>
                             </form>
                         </div>
                     </div>
@@ -52,7 +54,7 @@
             {% endfor %}
         </div>
 
-        {{ listm.pagination_nav('main.songs_list', pagination, sort, direction, per_page) }}
+        {{ listm.pagination_nav('main.songs_list', pagination, sort, direction, per_page, letter) }}
     {% endif %}
 {% endblock %}
 

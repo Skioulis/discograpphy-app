@@ -7,10 +7,10 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <h3 class="card-title mb-0">Song details</h3>
+                    <h3 class="card-title mb-0">Στοιχεία τραγουδιού</h3>
                     <div class="form-check form-switch m-0">
                         <input class="form-check-input" type="checkbox" role="switch" id="edit-mode-toggle" {% if is_edit_mode %}checked{% endif %}>
-                        <label class="form-check-label fw-semibold" for="edit-mode-toggle">Edit mode</label>
+                        <label class="form-check-label fw-semibold" for="edit-mode-toggle">Λειτουργία επεξεργασίας</label>
                     </div>
                 </div>
                 <div class="card-body">
@@ -31,7 +31,7 @@
                             {% for error in form.disk_name.errors %}
                                 <div class="invalid-feedback d-block">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Optional: Link this song to a disk now.</div>
+                            <div class="form-text">Προαιρετικό: Συνδέστε αυτό το τραγούδι με έναν δίσκο τώρα.</div>
                         </div>
 
                         <datalist id="disks-datalist">
@@ -41,14 +41,14 @@
                         </datalist>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Persons &amp; Roles</label>
+                            <label class="form-label fw-bold">Πρόσωπα &amp; ρόλοι</label>
                             <div class="table-responsive">
                                 <table class="table table-bordered align-middle" id="persons-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col">Person</th>
-                                            <th scope="col">Roles</th>
-                                            <th scope="col" style="width: 110px;">Action</th>
+                                            <th scope="col">Πρόσωπο</th>
+                                            <th scope="col">Ρόλοι</th>
+                                            <th scope="col" style="width: 110px;">Ενέργεια</th>
                                         </tr>
                                     </thead>
                                     <tbody id="persons-tbody">
@@ -78,10 +78,10 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Add person row below">
+                                                <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Προσθήκη γραμμής προσώπου παρακάτω">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Delete person row">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Διαγραφή γραμμής προσώπου">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -109,15 +109,15 @@
                     </form>
 
                     <div id="edit-actions" class="d-grid gap-2 mb-2 {% if not is_edit_mode %}d-none{% endif %}">
-                        <button type="submit" form="song-form" class="btn btn-warning btn-lg">Save</button>
-                        <form method="POST" action="{{ url_for('main.delete_song', song_id=song.song_id) }}" onsubmit="return confirm('Are you sure you want to delete this song?');">
+                        <button type="submit" form="song-form" class="btn btn-warning btn-lg">Αποθήκευση</button>
+                        <form method="POST" action="{{ url_for('main.delete_song', song_id=song.song_id) }}" onsubmit="return confirm('Σίγουρα θέλετε να διαγράψετε αυτό το τραγούδι;');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-danger btn-lg w-100">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-lg w-100">Διαγραφή</button>
                         </form>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Back to Songs</a>
+                        <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Πίσω στα τραγούδια</a>
                     </div>
                 </div>
             </div>
@@ -142,27 +142,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="d-flex flex-wrap gap-3">
                         <div class="form-check">
                             <input class="form-check-input editable-field" id="persons-${index}-isSinger" name="persons-${index}-isSinger" type="checkbox" value="y" disabled>
-                            <label class="form-check-label" for="persons-${index}-isSinger">Singer</label>
+                            <label class="form-check-label" for="persons-${index}-isSinger">Ερμηνεία</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input editable-field" id="persons-${index}-isComposer" name="persons-${index}-isComposer" type="checkbox" value="y" disabled>
-                            <label class="form-check-label" for="persons-${index}-isComposer">Composer</label>
+                            <label class="form-check-label" for="persons-${index}-isComposer">Σύνθεση</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input editable-field" id="persons-${index}-isSongwriter" name="persons-${index}-isSongwriter" type="checkbox" value="y" disabled>
-                            <label class="form-check-label" for="persons-${index}-isSongwriter">Songwriter</label>
+                            <label class="form-check-label" for="persons-${index}-isSongwriter">Στίχοι</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input editable-field" id="persons-${index}-isMusician" name="persons-${index}-isMusician" type="checkbox" value="y" disabled>
-                            <label class="form-check-label" for="persons-${index}-isMusician">Musician</label>
+                            <label class="form-check-label" for="persons-${index}-isMusician">Μουσικός</label>
                         </div>
                     </div>
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control d-none" aria-label="Add person row below">
+                    <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control d-none" aria-label="Προσθήκη γραμμής προσώπου παρακάτω">
                         <i class="fas fa-plus"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control d-none" aria-label="Delete person row">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control d-none" aria-label="Διαγραφή γραμμής προσώπου">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>

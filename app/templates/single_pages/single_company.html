@@ -7,10 +7,10 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <h3 class="card-title mb-0">Company details</h3>
+                    <h3 class="card-title mb-0">Στοιχεία εταιρείας</h3>
                     <div class="form-check form-switch m-0">
                         <input class="form-check-input" type="checkbox" role="switch" id="edit-mode-toggle" {% if is_edit_mode %}checked{% endif %}>
-                        <label class="form-check-label fw-semibold" for="edit-mode-toggle">Edit mode</label>
+                        <label class="form-check-label fw-semibold" for="edit-mode-toggle">Λειτουργία επεξεργασίας</label>
                     </div>
                 </div>
                 <div class="card-body">
@@ -34,44 +34,44 @@
                         </div>
                     </form>
 
-                    <h5 class="mt-4">Disks <span class="badge bg-secondary">{{ company.disks|length }}</span></h5>
+                    <h5 class="mt-4">Δίσκοι <span class="badge bg-secondary">{{ company.disks|length }}</span></h5>
                     {% if company.disks %}
                         <ul class="list-group mb-3">
                             {% for disk in company.disks %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     {{ disk.name }}
-                                    <a href="{{ url_for('main.single_disk', disk_id=disk.disk_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="{{ url_for('main.single_disk', disk_id=disk.disk_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-muted">No disks for this company.</p>
+                        <p class="text-muted">Δεν υπάρχουν δίσκοι για αυτή την εταιρεία.</p>
                     {% endif %}
 
-                    <h5 class="mt-4">Labels <span class="badge bg-secondary">{{ company.labels|length }}</span></h5>
+                    <h5 class="mt-4">Ετικέτες <span class="badge bg-secondary">{{ company.labels|length }}</span></h5>
                     {% if company.labels %}
                         <ul class="list-group mb-3">
                             {% for label in company.labels %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     {{ label.label }}
-                                    <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="{{ url_for('main.single_disk_label', label_id=label.label_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-muted">No labels for this company.</p>
+                        <p class="text-muted">Δεν υπάρχουν ετικέτες για αυτή την εταιρεία.</p>
                     {% endif %}
 
                     <div id="edit-actions" class="d-grid gap-2 mb-2 {% if not is_edit_mode %}d-none{% endif %}">
-                        <button type="submit" form="company-form" class="btn btn-warning btn-lg">Save</button>
-                        <form method="POST" action="{{ url_for('main.delete_company', company_id=company.company_id) }}" onsubmit="return confirm('Are you sure you want to delete this company?');">
+                        <button type="submit" form="company-form" class="btn btn-warning btn-lg">Αποθήκευση</button>
+                        <form method="POST" action="{{ url_for('main.delete_company', company_id=company.company_id) }}" onsubmit="return confirm('Σίγουρα θέλετε να διαγράψετε αυτή την εταιρεία;');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-danger btn-lg w-100">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-lg w-100">Διαγραφή</button>
                         </form>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Back to Home</a>
+                        <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">Πίσω στην αρχική</a>
                     </div>
                 </div>
             </div>
