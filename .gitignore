@@ -160,3 +160,5 @@ app/env-files/*.env.*
 
 # Migration files SHOULD NOT be ignored (as per previous instructions)
 # migrations/
+/Screenshots/*
+Screenshots

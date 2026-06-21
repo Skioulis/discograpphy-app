@@ -36,32 +36,32 @@
 
 {# Order-by + direction + per-page controls for a listing page. #}
 {% macro list_controls(endpoint, sort, direction, per_page, sort_options, per_page_choices, letter=None) %}
-    <form method="GET" action="{{ url_for(endpoint) }}" class="row g-2 justify-content-end align-items-end mb-4">
+    <form method="GET" action="{{ url_for(endpoint) }}" class="row g-3 justify-content-center justify-content-md-end align-items-end mb-4">
         {% if letter %}<input type="hidden" name="letter" value="{{ letter }}">{% endif %}
         <div class="col-auto">
-            <label for="sort" class="form-label mb-0 small text-muted">Ταξινόμηση</label>
-            <select id="sort" name="sort" class="form-select" onchange="this.form.submit()">
+            <label for="sort" class="form-label mb-1 small text-muted d-block text-center">Ταξινόμηση</label>
+            <select id="sort" name="sort" class="form-select form-select-lg" style="min-width: 230px;" onchange="this.form.submit()">
                 {% for value, (label, _) in sort_options.items() %}
                     <option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="col-auto">
-            <label for="dir" class="form-label mb-0 small text-muted">Φορά</label>
-            <select id="dir" name="dir" class="form-select" onchange="this.form.submit()">
+            <label for="dir" class="form-label mb-1 small text-muted d-block text-center">Φορά</label>
+            <select id="dir" name="dir" class="form-select form-select-lg" style="min-width: 170px;" onchange="this.form.submit()">
                 <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Αύξουσα</option>
                 <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Φθίνουσα</option>
             </select>
         </div>
         <div class="col-auto">
-            <label for="per_page" class="form-label mb-0 small text-muted">Ανά σελίδα</label>
-            <select id="per_page" name="per_page" class="form-select" onchange="this.form.submit()">
+            <label for="per_page" class="form-label mb-1 small text-muted d-block text-center">Ανά σελίδα</label>
+            <select id="per_page" name="per_page" class="form-select form-select-lg" style="min-width: 110px;" onchange="this.form.submit()">
                 {% for choice in per_page_choices %}
                     <option value="{{ choice }}" {% if choice == per_page %}selected{% endif %}>{{ choice }}</option>
                 {% endfor %}
             </select>
         </div>
-        <noscript><div class="col-auto"><button type="submit" class="btn btn-outline-success">Εφαρμογή</button></div></noscript>
+        <noscript><div class="col-auto d-flex align-items-end"><button type="submit" class="btn btn-outline-success btn-lg">Εφαρμογή</button></div></noscript>
     </form>
 {% endmacro %}
 

@@ -7,7 +7,7 @@ class PersonSongForm(FlaskForm):
     isSinger = BooleanField('Ερμηνεία', default=False)
     isComposer = BooleanField('Σύνθεση', default=False)
     isSongwriter = BooleanField('Στίχοι', default=False)
-    isMusician = BooleanField('Μουσικός', default=False)
+    isMusician = BooleanField('Μουσική', default=False)
 
 class SongForm(FlaskForm):
     title = StringField('Τίτλος', validators=[DataRequired(), Length(max=250)])

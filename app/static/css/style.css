@@ -496,6 +496,9 @@ main h1.text-center::after {
                 box-shadow var(--duration-fast) var(--ease-standard);
 }
 textarea.form-control { border-radius: var(--radius-md); }
+/* Leave room for the dropdown caret so the longest option text never runs
+   under it (Bootstrap paints the caret ~0.75rem from the right edge). */
+.form-select { padding-right: 2.5rem; }
 .form-control::placeholder { color: var(--ink-300); }
 .form-control:focus, .form-select:focus {
     border-color: var(--focus-ring);
