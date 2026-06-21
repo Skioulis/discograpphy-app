@@ -3,7 +3,7 @@ from wtforms import StringField, TextAreaField, SubmitField, FieldList, FormFiel
 from wtforms.validators import DataRequired, Length, Optional
 
 class PersonSongForm(FlaskForm):
-    person_name = StringField('Πρόσωπο', validators=[Optional()])
+    person_name = StringField('Καλλιτέχνης', validators=[Optional()])
     isSinger = BooleanField('Ερμηνεία', default=False)
     isComposer = BooleanField('Σύνθεση', default=False)
     isSongwriter = BooleanField('Στίχοι', default=False)

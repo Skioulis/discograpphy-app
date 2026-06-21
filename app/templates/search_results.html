@@ -5,7 +5,7 @@
     'everything': 'Όλα',
     'songs': 'τραγούδια',
     'disks': 'δίσκους',
-    'persons': 'πρόσωπα',
+    'persons': 'καλλιτέχνες',
     'companies': 'εταιρείες',
     'disk_labels': 'ετικέτες'
 } %}
@@ -74,7 +74,7 @@
         {% set persons = results.get('persons') %}
         {% if persons and persons['items'] %}
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <h3 class="mb-0">Πρόσωπα <span class="badge bg-secondary">{{ persons.count }}</span></h3>
+                <h3 class="mb-0">Καλλιτέχνες <span class="badge bg-secondary">{{ persons.count }}</span></h3>
                 {{ view_all('persons', persons) }}
             </div>
             <ul class="list-group my-3">

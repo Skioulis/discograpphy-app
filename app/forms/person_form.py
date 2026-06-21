@@ -11,4 +11,4 @@ class PersonForm(FlaskForm):
     def validate_name(self, field):
         existing = Person.query.filter_by(name=field.data).first()
         if existing and existing.person_id != getattr(self, 'editing_id', None):
-            raise ValidationError('Υπάρχει ήδη πρόσωπο με αυτό το όνομα.')
+            raise ValidationError('Υπάρχει ήδη καλλιτέχνης με αυτό το όνομα.')

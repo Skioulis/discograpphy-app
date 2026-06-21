@@ -41,12 +41,12 @@
                         </datalist>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Πρόσωπα &amp; ρόλοι</label>
+                            <label class="form-label fw-bold">Καλλιτέχνες &amp; ρόλοι</label>
                             <div class="table-responsive">
                                 <table class="table table-bordered align-middle" id="persons-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col">Πρόσωπο</th>
+                                            <th scope="col">Καλλιτέχνης</th>
                                             <th scope="col">Ρόλοι</th>
                                             <th scope="col" style="width: 110px;">Ενέργεια</th>
                                         </tr>
@@ -78,10 +78,10 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Προσθήκη γραμμής προσώπου παρακάτω">
+                                                <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Προσθήκη γραμμής καλλιτέχνη παρακάτω">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Διαγραφή γραμμής προσώπου">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control {% if not is_edit_mode %}d-none{% endif %}" aria-label="Διαγραφή γραμμής καλλιτέχνη">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -159,10 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control d-none" aria-label="Προσθήκη γραμμής προσώπου παρακάτω">
+                    <button type="button" class="btn btn-outline-success btn-sm add-person-row-btn edit-only-control d-none" aria-label="Προσθήκη γραμμής καλλιτέχνη παρακάτω">
                         <i class="fas fa-plus"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control d-none" aria-label="Διαγραφή γραμμής προσώπου">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-person-row-btn edit-only-control d-none" aria-label="Διαγραφή γραμμής καλλιτέχνη">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>

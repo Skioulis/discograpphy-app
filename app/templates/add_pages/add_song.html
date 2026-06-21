@@ -35,12 +35,12 @@
                         </datalist>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Πρόσωπα & ρόλοι</label>
+                            <label class="form-label fw-bold">Καλλιτέχνες & ρόλοι</label>
                             <div class="table-responsive">
                                 <table class="table table-bordered align-middle" id="persons-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col">Πρόσωπο</th>
+                                            <th scope="col">Καλλιτέχνης</th>
                                             <th scope="col">Ρόλοι</th>
                                             <th scope="col" style="width: 50px;"></th>
                                         </tr>
@@ -49,7 +49,7 @@
                                         {% for person_form in form.persons %}
                                         <tr class="person-row">
                                             <td>
-                                                {{ person_form.person_name(class="form-control", list="persons-datalist", placeholder="Αναζήτηση ή προσθήκη προσώπου...") }}
+                                                {{ person_form.person_name(class="form-control", list="persons-datalist", placeholder="Αναζήτηση ή προσθήκη καλλιτέχνη...") }}
                                                 {% for error in person_form.person_name.errors %}
                                                     <div class="invalid-feedback d-block">{{ error }}</div>
                                                 {% endfor %}

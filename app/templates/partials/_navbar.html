@@ -37,7 +37,7 @@
               <a class="nav-link{% if section == 'disks' %} active{% endif %}"{% if section == 'disks' %} aria-current="page"{% endif %} href="{{ url_for('main.disks_list') }}"><span class="navbar-text">Δίσκοι</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link{% if section == 'persons' %} active{% endif %}"{% if section == 'persons' %} aria-current="page"{% endif %} href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Πρόσωπα</span></a>
+              <a class="nav-link{% if section == 'persons' %} active{% endif %}"{% if section == 'persons' %} aria-current="page"{% endif %} href="{{ url_for('main.persons_list') }}"><span class="navbar-text">Καλλιτέχνες</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link{% if section == 'companies' %} active{% endif %}"{% if section == 'companies' %} aria-current="page"{% endif %} href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Εταιρείες</span></a>
@@ -60,7 +60,7 @@
                   <a class="nav-link navbar-text" href="{{ url_for('main.add_disk_label') }}">Νέα ετικέτα</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link navbar-text" href="{{ url_for('main.add_person') }}">Νέο πρόσωπο</a>
+                  <a class="nav-link navbar-text" href="{{ url_for('main.add_person') }}">Νέος καλλιτέχνης</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link navbar-text" href="{{ url_for('main.add_song') }}">Νέο τραγούδι</a>
@@ -73,7 +73,7 @@
               <option value="everything" {% if request.args.get('type', 'everything') == 'everything' %}selected{% endif %}>Όλα</option>
               <option value="disks" {% if request.args.get('type') == 'disks' %}selected{% endif %}>Δίσκοι</option>
               <option value="songs" {% if request.args.get('type') == 'songs' %}selected{% endif %}>Τραγούδια</option>
-              <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Πρόσωπα</option>
+              <option value="persons" {% if request.args.get('type') == 'persons' %}selected{% endif %}>Καλλιτέχνες</option>
               <option value="companies" {% if request.args.get('type') == 'companies' %}selected{% endif %}>Εταιρείες</option>
               <option value="disk_labels" {% if request.args.get('type') == 'disk_labels' %}selected{% endif %}>Ετικέτες</option>
             </select>

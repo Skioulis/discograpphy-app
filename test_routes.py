@@ -131,7 +131,7 @@ class RoutesTestCase(unittest.TestCase):
         r = self.client.post(f'/persons/{self.person_id}/save',
                              data={'name': 'Other Person', 'notes': ''})
         self.assertEqual(r.status_code, 400)
-        self.assertIn('Υπάρχει ήδη πρόσωπο'.encode(), r.data)
+        self.assertIn('Υπάρχει ήδη καλλιτέχνης'.encode(), r.data)
 
     def test_save_disk_updates_integer_size(self):
         r = self.client.post(f'/disks/{self.disk_id}/save', data={

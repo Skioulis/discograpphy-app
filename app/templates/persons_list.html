@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% import 'partials/_list_macros.html' as listm %}
-{% block title %} Πρόσωπα {% endblock %}
+{% block title %} Καλλιτέχνες {% endblock %}
 {% block body %}
-    <h1 class="mb-4 text-center">Πρόσωπα</h1>
+    <h1 class="mb-4 text-center">Καλλιτέχνες</h1>
 
     {{ listm.greek_alphabet_filter('main.persons_list', letter, greek_letters, available_letters, sort, direction, per_page) }}
 
     {{ listm.list_controls('main.persons_list', sort, direction, per_page, sort_options, per_page_choices, letter) }}
 
     {% if not persons %}
-        <p class="text-center text-muted">Δεν βρέθηκαν πρόσωπα.</p>
+        <p class="text-center text-muted">Δεν βρέθηκαν καλλιτέχνες.</p>
     {% else %}
         <p class="text-center text-muted small mb-3">
-            Εμφάνιση {{ persons|length }} από {{ pagination.total }} {{ 'πρόσωπο' if pagination.total == 1 else 'πρόσωπα' }}
+            Εμφάνιση {{ persons|length }} από {{ pagination.total }} {{ 'καλλιτέχνης' if pagination.total == 1 else 'καλλιτέχνες' }}
         </p>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4">
             {% for person in persons %}
@@ -27,7 +27,7 @@
                         <div class="card-footer bg-transparent border-top-0 d-flex gap-2 align-items-center">
                             <a href="{{ url_for('main.single_person', person_id=person.person_id) }}" class="btn btn-sm btn-outline-primary">Προβολή</a>
                             <a href="{{ url_for('main.single_person', person_id=person.person_id, edit=1) }}" class="btn btn-sm btn-outline-warning">Επεξεργασία</a>
-                            <form method="POST" action="{{ url_for('main.delete_person', person_id=person.person_id) }}" onsubmit="return confirm('Σίγουρα θέλετε να διαγράψετε αυτό το πρόσωπο;');" class="ms-auto m-0">
+                            <form method="POST" action="{{ url_for('main.delete_person', person_id=person.person_id) }}" onsubmit="return confirm('Σίγουρα θέλετε να διαγράψετε αυτόν τον καλλιτέχνη;');" class="ms-auto m-0">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="next" value="{{ url_for('main.persons_list', letter=letter, sort=sort, dir=direction, per_page=per_page, page=pagination.page) }}">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Διαγραφή</button>

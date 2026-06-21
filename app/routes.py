@@ -363,7 +363,7 @@ def add_person():
         )
         db.session.add(new_person)
         db.session.commit()
-        flash('Το πρόσωπο προστέθηκε με επιτυχία!', 'success')
+        flash('Ο καλλιτέχνης προστέθηκε με επιτυχία!', 'success')
         return redirect(url_for('main.home'))
     return render_template('add_pages/add_person.html', form=form)
 
@@ -543,7 +543,7 @@ def save_person(person_id):
     person.name = form.name.data
     person.notes = form.notes.data
     db.session.commit()
-    flash('Το πρόσωπο ενημερώθηκε με επιτυχία!', 'success')
+    flash('Ο καλλιτέχνης ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_person', person_id=person.person_id))
 
 
@@ -553,7 +553,7 @@ def delete_person(person_id):
     PeopleSong.query.filter_by(person_id=person.person_id).delete(synchronize_session=False)
     db.session.delete(person)
     db.session.commit()
-    flash('Το πρόσωπο διαγράφηκε με επιτυχία!', 'success')
+    flash('Ο καλλιτέχνης διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')
 
 
