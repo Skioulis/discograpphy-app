@@ -45,6 +45,9 @@ class ProductionConfig(Config):
     if os.path.exists(env_file):
         load_dotenv(env_file)
 
+    # Re-read SECRET_KEY after the env file is loaded; the base class resolves it
+    # at import time, before this file's variables are available.
+    SECRET_KEY = os.environ.get('SECRET_KEY') or DEFAULT_SECRET_KEY
     database_uri = os.getenv('DATABASE_URL') or _build_database_uri()
 
     @classmethod
