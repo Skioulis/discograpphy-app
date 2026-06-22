@@ -2,7 +2,7 @@
    listing by the first letter of its title/name. Chips are links that preserve
    the current sort / direction / per_page. The signature interaction of the
    Σάκης Collection design system. #}
-{% macro greek_alphabet_filter(endpoint, letter, greek_letters, available_letters, sort, direction, per_page) %}
+{% macro greek_alphabet_filter(endpoint, letter, greek_letters, available_letters, sort, direction, per_page, latin_letters=None) %}
     <div class="greek-filter-panel">
         <div class="greek-filter-head">
             <span class="eyebrow">Αλφαβητικό φίλτρο</span>
@@ -23,15 +23,37 @@
                     <span class="greek-chip disabled" aria-disabled="true">{{ l }}</span>
                 {% endif %}
             {% endfor %}
-            {% if '#' in available_letters %}
-                <a class="greek-chip{% if letter == '#' %} active{% endif %}"
-                   {% if letter == '#' %}aria-current="true"{% endif %}
-                   href="{{ url_for(endpoint, letter='#', sort=sort, dir=direction, per_page=per_page) }}">#</a>
-            {% else %}
-                <span class="greek-chip disabled" aria-disabled="true">#</span>
+            {% if not latin_letters %}
+                {{ _hash_chip(endpoint, letter, available_letters, sort, direction, per_page) }}
             {% endif %}
         </div>
+        {% if latin_letters %}
+            <div class="greek-filter greek-filter--latin" role="group" aria-label="Φίλτρο λατινικού αλφαβήτου">
+                {% for l in latin_letters %}
+                    {% if l in available_letters %}
+                        <a class="greek-chip{% if l == letter %} active{% endif %}"
+                           {% if l == letter %}aria-current="true"{% endif %}
+                           href="{{ url_for(endpoint, letter=l, sort=sort, dir=direction, per_page=per_page) }}">{{ l }}</a>
+                    {% else %}
+                        <span class="greek-chip disabled" aria-disabled="true">{{ l }}</span>
+                    {% endif %}
+                {% endfor %}
+                {{ _hash_chip(endpoint, letter, available_letters, sort, direction, per_page) }}
+            </div>
+        {% endif %}
     </div>
+{% endmacro %}
+
+{# The '#' bucket chip (entries that start with neither a Greek nor Latin
+   letter). Rendered at the end of the last alphabet row. #}
+{% macro _hash_chip(endpoint, letter, available_letters, sort, direction, per_page) %}
+    {% if '#' in available_letters %}
+        <a class="greek-chip{% if letter == '#' %} active{% endif %}"
+           {% if letter == '#' %}aria-current="true"{% endif %}
+           href="{{ url_for(endpoint, letter='#', sort=sort, dir=direction, per_page=per_page) }}">#</a>
+    {% else %}
+        <span class="greek-chip disabled" aria-disabled="true">#</span>
+    {% endif %}
 {% endmacro %}
 
 {# Order-by + direction + per-page controls for a listing page. #}

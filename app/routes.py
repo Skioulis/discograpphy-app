@@ -164,43 +164,55 @@ _GREEK_VARIANTS = {
     'Ω': ['Ω', 'Ώ'],
 }
 
+# Latin alphabet, offered as an optional second filter row on listings (e.g.
+# companies) that hold many Latin-named entries. Opt in per listing via
+# latin=True; when off, Latin names fold to the '#' bucket exactly as before.
+LATIN_LETTERS = [chr(c) for c in range(ord('A'), ord('Z') + 1)]
+
 
 def _letter_variants(letter):
     return _GREEK_VARIANTS.get(letter, [letter])
 
 
-def _fold_first_letter(text):
-    """Fold the first character of a title/name to a base Greek capital, or
-    '#' when it is not a Greek letter."""
+def _fold_first_letter(text, latin=False):
+    """Fold the first character of a title/name to a base Greek capital, a base
+    Latin capital (only when latin=True), or '#' otherwise."""
     if not text:
         return '#'
     ch = text.strip()[:1].upper()
     if not ch:
         return '#'
     base = unicodedata.normalize('NFD', ch)[0]
-    return base if base in GREEK_LETTERS else '#'
+    if base in GREEK_LETTERS:
+        return base
+    if latin and base in LATIN_LETTERS:
+        return base
+    return '#'
 
 
-def _resolve_letter():
+def _resolve_letter(latin=False):
     """Validate the requested ?letter= against the known buckets."""
     letter = request.args.get('letter')
     if letter in GREEK_LETTERS or letter == '#':
         return letter
+    if latin and letter in LATIN_LETTERS:
+        return letter
     return None
 
 
-def _available_letters(column):
-    """Set of buckets (Greek letters and/or '#') that actually have entries,
-    so the UI can dim letters that lead nowhere."""
+def _available_letters(column, latin=False):
+    """Set of buckets (Greek letters, optionally Latin letters, and/or '#') that
+    actually have entries, so the UI can dim letters that lead nowhere."""
     rows = db.session.query(func.substr(column, 1, 1)).distinct().all()
-    return {_fold_first_letter(ch) for (ch,) in rows}
+    return {_fold_first_letter(ch, latin=latin) for (ch,) in rows}
 
 
-def _apply_letter_filter(query, column, letter):
+def _apply_letter_filter(query, column, letter, latin=False):
     if not letter:
         return query
     if letter == '#':
-        prefixes = [p for base in GREEK_LETTERS for p in _letter_variants(base)]
+        bases = GREEK_LETTERS + (LATIN_LETTERS if latin else [])
+        prefixes = [p for base in bases for p in _letter_variants(base)]
         conditions = [column.ilike(f'{p}%') for p in prefixes]
         return query.filter(column.isnot(None), ~or_(*conditions))
     conditions = [column.ilike(f'{p}%') for p in _letter_variants(letter)]
@@ -273,15 +285,16 @@ def persons_list():
 
 @main_bp.route('/companies')
 def companies_list():
-    letter = _resolve_letter()
-    available_letters = _available_letters(Company.name)
-    query = _apply_letter_filter(Company.query, Company.name, letter)
+    letter = _resolve_letter(latin=True)
+    available_letters = _available_letters(Company.name, latin=True)
+    query = _apply_letter_filter(Company.query, Company.name, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, COMPANY_SORT_OPTIONS)
     return render_template(
         'companies_list.html', pagination=pagination, companies=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
-        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
+        letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
+        available_letters=available_letters,
     )
 
 

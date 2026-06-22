@@ -20,7 +20,7 @@
                 'main.disks_list': 'disks', 'main.single_disk': 'disks', 'main.add_disk': 'disks',
                 'main.persons_list': 'persons', 'main.single_person': 'persons', 'main.add_person': 'persons',
                 'main.companies_list': 'companies', 'main.single_company': 'companies', 'main.add_company': 'companies',
-                'main.disk_labels_list': 'disk_labels', 'main.single_disk_label': 'disk_labels', 'main.add_disk_label': 'disk_labels'
+
             } %}
             {% if endpoint == 'main.search' %}
                 {% set section = request.args.get('type') %}
@@ -28,7 +28,7 @@
                 {% set section = section_map.get(endpoint) %}
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text"><i class="fa-solid fa-house me-1"></i>Αρχική</span></a>
+              <a class="nav-link{% if section == 'home' %} active{% endif %}"{% if section == 'home' %} aria-current="page"{% endif %} href="{{ url_for('main.home') }}"><span class="navbar-text"><i class="fa-solid fa-house me-1"></i></span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link{% if section == 'songs' %} active{% endif %}"{% if section == 'songs' %} aria-current="page"{% endif %} href="{{ url_for('main.songs_list') }}"><span class="navbar-text">Τραγούδια</span></a>
@@ -42,9 +42,9 @@
             <li class="nav-item">
               <a class="nav-link{% if section == 'companies' %} active{% endif %}"{% if section == 'companies' %} aria-current="page"{% endif %} href="{{ url_for('main.companies_list') }}"><span class="navbar-text">Εταιρείες</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link{% if section == 'disk_labels' %} active{% endif %}"{% if section == 'disk_labels' %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Ετικέτες</span></a>
-            </li>
+{#            <li class="nav-item">#}
+{#              <a class="nav-link{% if section == 'disk_labels' %} active{% endif %}"{% if section == 'disk_labels' %} aria-current="page"{% endif %} href="{{ url_for('main.disk_labels_list') }}"><span class="navbar-text">Ετικέτες</span></a>#}
+{#            </li>#}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="navbar-text"><i class="fa-solid fa-plus me-1"></i>Προσθήκη</span>
