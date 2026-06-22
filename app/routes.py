@@ -1,7 +1,10 @@
+import os
 import unicodedata
+import uuid
 from urllib.parse import urlparse
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
+from werkzeug.utils import secure_filename
 from sqlalchemy import func, or_
 
 from .models.Song import Song
@@ -45,8 +48,6 @@ def _build_single_song_form(song):
     form.title.data = song.title
     form.notes.data = song.notes or ''
     form.lyrics.data = song.lyrics or ''
-    form.audio_path.data = song.audio_path or ''
-    form.image_path.data = song.image_path or ''
     form.disk_name.data = song.disks[0].name if song.disks else ''
 
     while len(form.persons) > 0:
@@ -92,6 +93,45 @@ def _merge_song_people(persons_field):
         roles['isMusician'] = roles['isMusician'] or bool(p_form.isMusician.data)
 
     return merged
+
+
+def _save_upload(file_storage, subdir):
+    """Save an uploaded file under MEDIA_ROOT/<subdir> with a collision-safe name.
+
+    Returns the path relative to MEDIA_ROOT (stored in the DB and used by the
+    /media route), or None when no file was provided."""
+    if not file_storage or not file_storage.filename:
+        return None
+
+    # Preserve the extension separately: secure_filename() strips non-ASCII, so a
+    # purely Greek name like 'τραγούδι.mp3' collapses to 'mp3' and loses the
+    # '.mp3' suffix — which would break content-type detection when served.
+    base, ext = os.path.splitext(file_storage.filename)
+    safe_base = secure_filename(base)
+    ext = ext.lower()
+    unique = f"{uuid.uuid4().hex[:8]}{('_' + safe_base) if safe_base else ''}{ext}"
+    dest_dir = os.path.join(current_app.config['MEDIA_ROOT'], subdir)
+    os.makedirs(dest_dir, exist_ok=True)
+    file_storage.save(os.path.join(dest_dir, unique))
+    return f"{subdir}/{unique}"
+
+
+def _delete_media(rel_path):
+    """Remove a media file by its MEDIA_ROOT-relative path. Best-effort: ignores
+    a missing file. Call only after the DB change that orphans it is committed."""
+    if not rel_path:
+        return
+    try:
+        os.remove(os.path.join(current_app.config['MEDIA_ROOT'], rel_path))
+    except FileNotFoundError:
+        pass
+
+
+@main_bp.route('/media/<path:filename>')
+def media(filename):
+    """Serve uploaded mp3s / images from the media directory."""
+    return send_from_directory(current_app.config['MEDIA_ROOT'], filename)
+
 
 @main_bp.route('/')
 def home():
@@ -403,8 +443,8 @@ def add_song():
             title=form.title.data,
             notes=form.notes.data,
             lyrics=(form.lyrics.data.strip() or None) if form.lyrics.data else None,
-            audio_path=(form.audio_path.data.strip() or None) if form.audio_path.data else None,
-            image_path=(form.image_path.data.strip() or None) if form.image_path.data else None,
+            audio_path=_save_upload(form.audio_file.data, 'audio'),
+            image_path=_save_upload(form.image_file.data, 'images'),
         )
 
         # Link to disk if selected
@@ -458,8 +498,20 @@ def save_song(song_id):
         song.disks.append(selected_disk)
 
     song.lyrics = form.lyrics.data.strip() if form.lyrics.data and form.lyrics.data.strip() else None
-    song.audio_path = form.audio_path.data.strip() if form.audio_path.data and form.audio_path.data.strip() else None
-    song.image_path = form.image_path.data.strip() if form.image_path.data and form.image_path.data.strip() else None
+
+    # Replace a stored file only when a new one is uploaded; otherwise keep it.
+    # Remember the files being replaced so they can be cleaned up post-commit.
+    orphaned = []
+    new_audio = _save_upload(form.audio_file.data, 'audio')
+    if new_audio:
+        if song.audio_path and song.audio_path != new_audio:
+            orphaned.append(song.audio_path)
+        song.audio_path = new_audio
+    new_image = _save_upload(form.image_file.data, 'images')
+    if new_image:
+        if song.image_path and song.image_path != new_image:
+            orphaned.append(song.image_path)
+        song.image_path = new_image
 
     PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
 
@@ -467,6 +519,8 @@ def save_song(song_id):
         db.session.add(PeopleSong(person=person, song=song, **roles))
 
     db.session.commit()
+    for path in orphaned:
+        _delete_media(path)
     flash('Το τραγούδι ενημερώθηκε με επιτυχία!', 'success')
     return redirect(url_for('main.single_song', song_id=song.song_id))
 
@@ -474,11 +528,15 @@ def save_song(song_id):
 @main_bp.route('/songs/<int:song_id>/delete', methods=['POST'])
 def delete_song(song_id):
     song = Song.query.get_or_404(song_id)
+    media_paths = [song.audio_path, song.image_path]
 
     PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
     song.disks.clear()
     db.session.delete(song)
     db.session.commit()
+
+    for path in media_paths:
+        _delete_media(path)
 
     flash('Το τραγούδι διαγράφηκε με επιτυχία!', 'success')
     return _safe_redirect('main.home')

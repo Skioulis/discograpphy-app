@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 def _build_database_uri():
     db_user = os.getenv('DB_USER')
@@ -18,6 +20,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY') or DEFAULT_SECRET_KEY
 
+    # Directory where uploaded mp3s / images are stored. Defaults to a `media`
+    # folder next to this file, which is also the container's bind-mount target
+    # (/app/media). Override with the MEDIA_ROOT environment variable.
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT') or os.path.join(basedir, 'media')
+
+    # Cap upload size (mp3s can be large) — exceeding this returns HTTP 413.
+    MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))
+
     @classmethod
     def validate(cls):
         """Hook for env-specific config checks; overridden where needed."""
@@ -30,10 +40,10 @@ class DevelopmentConfig(Config):
     env_file = f'app/env-files/db.env.{env}'
 
     if os.path.exists(env_file):
-        load_dotenv(env_file)
+        load_dotenv(env_file, override=True)
     else:
         # Fallback to a default if the specific env file is missing
-        load_dotenv('app/env-files/db.env')
+        load_dotenv('app/env-files/db.env', override=True)
 
     database_uri = _build_database_uri()
 
@@ -43,7 +53,7 @@ class ProductionConfig(Config):
 
     env_file = 'app/env-files/db.env.production'
     if os.path.exists(env_file):
-        load_dotenv(env_file)
+        load_dotenv(env_file, override=True)
 
     # Re-read SECRET_KEY after the env file is loaded; the base class resolves it
     # at import time, before this file's variables are available.

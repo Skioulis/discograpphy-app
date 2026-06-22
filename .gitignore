@@ -162,3 +162,10 @@ app/env-files/*.env.*
 # migrations/
 /Screenshots/*
 Screenshots
+
+# Uploaded media (mp3s / images) — keep the directory, ignore its contents
+/media/*
+!/media/.gitkeep
+/.junie/
+/.github/
+/.claude/

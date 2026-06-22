@@ -1,6 +1,10 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField, SubmitField, FieldList, FormField, BooleanField
 from wtforms.validators import DataRequired, Length, Optional
+
+AUDIO_EXTENSIONS = ['mp3']
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp']
 
 class PersonSongForm(FlaskForm):
     person_name = StringField('Καλλιτέχνης', validators=[Optional()])
@@ -11,8 +15,10 @@ class PersonSongForm(FlaskForm):
 
 class SongForm(FlaskForm):
     title = StringField('Τίτλος', validators=[DataRequired(), Length(max=250)])
-    audio_path = StringField('Διαδρομή αρχείου ήχου', validators=[Optional(), Length(max=500)])
-    image_path = StringField('Διαδρομή εικόνας', validators=[Optional(), Length(max=500)])
+    audio_file = FileField('Αρχείο ήχου (mp3)', validators=[
+        Optional(), FileAllowed(AUDIO_EXTENSIONS, 'Επιτρέπονται μόνο αρχεία mp3.')])
+    image_file = FileField('Εικόνα', validators=[
+        Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Επιτρέπονται μόνο αρχεία εικόνας.')])
     lyrics = TextAreaField('Στίχοι', validators=[Optional()])
     notes = TextAreaField('Σημειώσεις', validators=[Optional()])
     disk_name = StringField('Δίσκος', validators=[Optional(), Length(max=250)])

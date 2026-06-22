@@ -23,6 +23,11 @@ def create_app(config_class=None):
     app.config['SQLALCHEMY_DATABASE_URI'] = config_class.database_uri
     csrf = CSRFProtect(app)
 
+    # Ensure the media upload directory (and its subfolders) exist.
+    import os
+    for sub in ('audio', 'images'):
+        os.makedirs(os.path.join(app.config['MEDIA_ROOT'], sub), exist_ok=True)
+
     db.init_app(app)
     migrate.init_app(app, db)
 

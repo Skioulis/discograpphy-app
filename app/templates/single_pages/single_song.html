@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="song-form" method="POST" action="{{ url_for('main.save_song', song_id=song.song_id) }}">
+                    <form id="song-form" method="POST" action="{{ url_for('main.save_song', song_id=song.song_id) }}" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
 
                         <div class="mb-3">
@@ -26,21 +26,29 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form.audio_path.label(class="form-label") }}
-                            {{ form.audio_path(class="form-control editable-field" + (" is-invalid" if form.audio_path.errors else ""), disabled=True) }}
-                            {% for error in form.audio_path.errors %}
+                            {{ form.audio_file.label(class="form-label") }}
+                            {% if song.audio_path %}
+                                <audio controls class="w-100 mb-2" src="{{ url_for('main.media', filename=song.audio_path) }}"></audio>
+                            {% endif %}
+                            {{ form.audio_file(class="form-control editable-field" + (" is-invalid" if form.audio_file.errors else ""), accept="audio/mpeg,.mp3", disabled=True) }}
+                            {% for error in form.audio_file.errors %}
                                 <div class="invalid-feedback d-block">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Προαιρετικό: διαδρομή προς το αρχείο ήχου (mp3).</div>
+                            <div class="form-text">{% if song.audio_path %}Ανεβάστε νέο αρχείο για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε αρχείο ήχου (mp3).{% endif %}</div>
                         </div>
 
                         <div class="mb-3">
-                            {{ form.image_path.label(class="form-label") }}
-                            {{ form.image_path(class="form-control editable-field" + (" is-invalid" if form.image_path.errors else ""), disabled=True) }}
-                            {% for error in form.image_path.errors %}
+                            {{ form.image_file.label(class="form-label") }}
+                            {% if song.image_path %}
+                                <div class="mb-2">
+                                    <img src="{{ url_for('main.media', filename=song.image_path) }}" alt="{{ song.title }}" class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            {% endif %}
+                            {{ form.image_file(class="form-control editable-field" + (" is-invalid" if form.image_file.errors else ""), accept="image/*", disabled=True) }}
+                            {% for error in form.image_file.errors %}
                                 <div class="invalid-feedback d-block">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Προαιρετικό: διαδρομή προς την εικόνα.</div>
+                            <div class="form-text">{% if song.image_path %}Ανεβάστε νέα εικόνα για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε εικόνα.{% endif %}</div>
                         </div>
 
                         <div class="mb-3">

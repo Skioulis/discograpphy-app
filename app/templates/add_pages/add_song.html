@@ -8,7 +8,7 @@
                     <h3 class="card-title mb-0">Προσθήκη νέου τραγουδιού</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('main.add_song') }}">
+                    <form method="POST" action="{{ url_for('main.add_song') }}" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
@@ -20,21 +20,21 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form.audio_path.label(class="form-label") }}
-                            {{ form.audio_path(class="form-control" + (" is-invalid" if form.audio_path.errors else ""), placeholder="π.χ. /app/media/audio/track.mp3") }}
-                            {% for error in form.audio_path.errors %}
+                            {{ form.audio_file.label(class="form-label") }}
+                            {{ form.audio_file(class="form-control" + (" is-invalid" if form.audio_file.errors else ""), accept="audio/mpeg,.mp3") }}
+                            {% for error in form.audio_file.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Προαιρετικό: διαδρομή προς το αρχείο ήχου (mp3).</div>
+                            <div class="form-text">Προαιρετικό: ανεβάστε αρχείο ήχου (mp3).</div>
                         </div>
 
                         <div class="mb-3">
-                            {{ form.image_path.label(class="form-label") }}
-                            {{ form.image_path(class="form-control" + (" is-invalid" if form.image_path.errors else ""), placeholder="π.χ. /app/media/images/cover.jpg") }}
-                            {% for error in form.image_path.errors %}
+                            {{ form.image_file.label(class="form-label") }}
+                            {{ form.image_file(class="form-control" + (" is-invalid" if form.image_file.errors else ""), accept="image/*") }}
+                            {% for error in form.image_file.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
-                            <div class="form-text">Προαιρετικό: διαδρομή προς την εικόνα.</div>
+                            <div class="form-text">Προαιρετικό: ανεβάστε εικόνα.</div>
                         </div>
 
                         <div class="mb-3">
