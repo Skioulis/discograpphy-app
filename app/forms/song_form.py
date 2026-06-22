@@ -11,6 +11,8 @@ class PersonSongForm(FlaskForm):
 
 class SongForm(FlaskForm):
     title = StringField('Τίτλος', validators=[DataRequired(), Length(max=250)])
+    audio_path = StringField('Διαδρομή αρχείου ήχου', validators=[Optional(), Length(max=500)])
+    image_path = StringField('Διαδρομή εικόνας', validators=[Optional(), Length(max=500)])
     lyrics = TextAreaField('Στίχοι', validators=[Optional()])
     notes = TextAreaField('Σημειώσεις', validators=[Optional()])
     disk_name = StringField('Δίσκος', validators=[Optional(), Length(max=250)])

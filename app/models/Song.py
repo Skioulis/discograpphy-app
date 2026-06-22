@@ -15,6 +15,8 @@ class Song(db.Model, TimestampMixin):
     title: so.Mapped[str] = so.mapped_column(sa.String(250), index=True)
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
     lyrics: so.Mapped[Optional[str]] = so.mapped_column(sa.TEXT(), nullable=True)
+    audio_path: so.Mapped[Optional[str]] = so.mapped_column(sa.String(500), nullable=True)
+    image_path: so.Mapped[Optional[str]] = so.mapped_column(sa.String(500), nullable=True)
 
     disks: so.Mapped[List['Disk']] = so.relationship(
         secondary=discsongs,

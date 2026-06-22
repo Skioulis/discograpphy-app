@@ -20,6 +20,24 @@
                         </div>
 
                         <div class="mb-3">
+                            {{ form.audio_path.label(class="form-label") }}
+                            {{ form.audio_path(class="form-control" + (" is-invalid" if form.audio_path.errors else ""), placeholder="π.χ. /app/media/audio/track.mp3") }}
+                            {% for error in form.audio_path.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Προαιρετικό: διαδρομή προς το αρχείο ήχου (mp3).</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.image_path.label(class="form-label") }}
+                            {{ form.image_path(class="form-control" + (" is-invalid" if form.image_path.errors else ""), placeholder="π.χ. /app/media/images/cover.jpg") }}
+                            {% for error in form.image_path.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Προαιρετικό: διαδρομή προς την εικόνα.</div>
+                        </div>
+
+                        <div class="mb-3">
                             {{ form.disk_name.label(class="form-label") }}
                             {{ form.disk_name(class="form-control" + (" is-invalid" if form.disk_name.errors else ""), list="disks-datalist", placeholder="Αναζήτηση διαθέσιμων δίσκων...") }}
                             {% for error in form.disk_name.errors %}

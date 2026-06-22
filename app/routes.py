@@ -45,6 +45,8 @@ def _build_single_song_form(song):
     form.title.data = song.title
     form.notes.data = song.notes or ''
     form.lyrics.data = song.lyrics or ''
+    form.audio_path.data = song.audio_path or ''
+    form.image_path.data = song.image_path or ''
     form.disk_name.data = song.disks[0].name if song.disks else ''
 
     while len(form.persons) > 0:
@@ -401,6 +403,8 @@ def add_song():
             title=form.title.data,
             notes=form.notes.data,
             lyrics=(form.lyrics.data.strip() or None) if form.lyrics.data else None,
+            audio_path=(form.audio_path.data.strip() or None) if form.audio_path.data else None,
+            image_path=(form.image_path.data.strip() or None) if form.image_path.data else None,
         )
 
         # Link to disk if selected
@@ -454,6 +458,8 @@ def save_song(song_id):
         song.disks.append(selected_disk)
 
     song.lyrics = form.lyrics.data.strip() if form.lyrics.data and form.lyrics.data.strip() else None
+    song.audio_path = form.audio_path.data.strip() if form.audio_path.data and form.audio_path.data.strip() else None
+    song.image_path = form.image_path.data.strip() if form.image_path.data and form.image_path.data.strip() else None
 
     PeopleSong.query.filter_by(song_id=song.song_id).delete(synchronize_session=False)
 
