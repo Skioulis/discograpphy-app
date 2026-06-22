@@ -1,0 +1,50 @@
+# Discography app + PostgreSQL for Raspberry Pi (CasaOS).
+#
+# Configuration is read from a `.env` file sitting next to this file
+# (copy .env.docker.example -> .env and fill it in). Compose substitutes the
+# ${VAR} values below from that file.
+#
+# Volumes:
+#   - pgdata          : named volume -> Postgres data persistence
+#   - ${MEDIA_HOST_PATH}:/app/media : bind mount for external mp3s / images
+#                                     you'll add later (drop files on the host).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: production
+      # The app talks to Postgres over the compose network using the service name.
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "${WEB_PORT:-9292}:9292"
+    volumes:
+      # Host directory for mp3s / images, mounted into the container at /app/media.
+      - ${MEDIA_HOST_PATH:-./media}:/app/media
+
+volumes:
+  pgdata:

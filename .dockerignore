@@ -1,0 +1,28 @@
+# Keep the build context small and avoid leaking local/secret files into the image.
+.git
+.gitignore
+.venv
+venv
+env
+ENV
+**/__pycache__
+*.pyc
+*.pyo
+.idea
+.junie
+.github
+Screenshots
+ideas and TODO
+README.md
+test.py
+test_routes.py
+test_song_disk_name.py
+
+# Local secrets / env — the app reads config from environment variables in the container.
+.env
+app/env-files/*.env
+app/env-files/*.env.*
+!app/env-files/*.env.example
+
+# Local media bind-mount target (provided at runtime via the volume, not baked in).
+media
