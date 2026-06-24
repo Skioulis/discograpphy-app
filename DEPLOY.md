@@ -1,4 +1,4 @@
-# Deploying to a Raspberry Pi (Docker + CasaOS)
+how# Deploying to a Raspberry Pi (Docker + CasaOS)
 
 This app ships as a Docker stack: the Flask app (served by gunicorn) plus a
 PostgreSQL database. Configuration is read from a `.env` file, the database is
@@ -83,6 +83,39 @@ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:9292/
 ```
 
 App is reachable at `http://<pi-ip>:<WEB_PORT>`.
+
+---
+
+## Connecting a database client
+
+The `db` service publishes Postgres on the host so you can connect a client
+(DBeaver, DataGrip, pgAdmin) directly. The host port is set by `DB_PORT_HOST`
+in `.env` (defaults to `5432`).
+
+Connection settings:
+
+| Field    | Value                                                    |
+| -------- | -------------------------------------------------------- |
+| Host     | `<pi-ip>` (or `localhost` if the client runs on the Pi)  |
+| Port     | `DB_PORT_HOST` (default `5432`)                          |
+| Database | `DB_NAME`                                                |
+| User     | `DB_USER`                                                |
+| Password | `DB_PASSWORD`                                            |
+
+Apply a change to the port mapping by recreating the container (`restart` does
+not pick up port changes):
+
+```bash
+docker compose up -d
+```
+
+Notes:
+
+- If `5432` is already taken on the host (e.g. a native Postgres), set a
+  different `DB_PORT_HOST` such as `5433` in `.env` and connect on that port.
+- This exposes the database to your LAN — fine on a trusted home network. If the
+  Pi is ever internet-facing, do **not** expose it; tunnel over SSH instead
+  (bind `127.0.0.1:5432:5432` and use your client's SSH-tunnel feature).
 
 ---
 

@@ -17,6 +17,11 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    ports:
+      # Exposes Postgres on the host so a database client (DBeaver, DataGrip,
+      # pgAdmin) can connect at <host-ip>:${DB_PORT_HOST}. Only do this on a
+      # trusted network — it opens the DB to anything that can reach the host.
+      - "${DB_PORT_HOST:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
