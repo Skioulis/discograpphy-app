@@ -289,7 +289,7 @@ def songs_list():
     query = _apply_letter_filter(query, Song.title, letter)
     pagination, sort, direction, per_page = _paginate(query, SONG_SORT_OPTIONS)
     return render_template(
-        'songs_list.html', pagination=pagination, songs=pagination.items,
+        'List_pages/songs_list.html', pagination=pagination, songs=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
         letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
@@ -304,7 +304,7 @@ def disks_list():
     query = _apply_letter_filter(query, Disk.name, letter)
     pagination, sort, direction, per_page = _paginate(query, DISK_SORT_OPTIONS)
     return render_template(
-        'disks_list.html', pagination=pagination, disks=pagination.items,
+        'List_pages/disks_list.html', pagination=pagination, disks=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
         letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
@@ -318,7 +318,7 @@ def persons_list():
     query = _apply_letter_filter(Person.query, Person.name, letter)
     pagination, sort, direction, per_page = _paginate(query, PERSON_SORT_OPTIONS)
     return render_template(
-        'persons_list.html', pagination=pagination, persons=pagination.items,
+        'List_pages/persons_list.html', pagination=pagination, persons=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
         letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
@@ -332,7 +332,7 @@ def companies_list():
     query = _apply_letter_filter(Company.query, Company.name, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, COMPANY_SORT_OPTIONS)
     return render_template(
-        'companies_list.html', pagination=pagination, companies=pagination.items,
+        'List_pages/companies_list.html', pagination=pagination, companies=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=COMPANY_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
         letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
@@ -348,7 +348,7 @@ def disk_labels_list():
     query = _apply_letter_filter(query, DiskLabel.label, letter)
     pagination, sort, direction, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
     return render_template(
-        'disk_labels_list.html', pagination=pagination, labels=pagination.items,
+        'List_pages/disk_labels_list.html', pagination=pagination, labels=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
         letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,

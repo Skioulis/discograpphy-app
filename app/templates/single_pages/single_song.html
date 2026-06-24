@@ -25,31 +25,7 @@
                             {% endfor %}
                         </div>
 
-                        <div class="mb-3">
-                            {{ form.audio_file.label(class="form-label") }}
-                            {% if song.audio_path %}
-                                <audio controls class="w-100 mb-2" src="{{ url_for('main.media', filename=song.audio_path) }}"></audio>
-                            {% endif %}
-                            {{ form.audio_file(class="form-control editable-field" + (" is-invalid" if form.audio_file.errors else ""), accept="audio/mpeg,.mp3", disabled=True) }}
-                            {% for error in form.audio_file.errors %}
-                                <div class="invalid-feedback d-block">{{ error }}</div>
-                            {% endfor %}
-                            <div class="form-text">{% if song.audio_path %}Ανεβάστε νέο αρχείο για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε αρχείο ήχου (mp3).{% endif %}</div>
-                        </div>
 
-                        <div class="mb-3">
-                            {{ form.image_file.label(class="form-label") }}
-                            {% if song.image_path %}
-                                <div class="mb-2">
-                                    <img src="{{ url_for('main.media', filename=song.image_path) }}" alt="{{ song.title }}" class="img-thumbnail" style="max-height: 200px;">
-                                </div>
-                            {% endif %}
-                            {{ form.image_file(class="form-control editable-field" + (" is-invalid" if form.image_file.errors else ""), accept="image/*", disabled=True) }}
-                            {% for error in form.image_file.errors %}
-                                <div class="invalid-feedback d-block">{{ error }}</div>
-                            {% endfor %}
-                            <div class="form-text">{% if song.image_path %}Ανεβάστε νέα εικόνα για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε εικόνα.{% endif %}</div>
-                        </div>
 
                         <div class="mb-3">
                             {{ form.disk_name.label(class="form-label") }}
@@ -132,6 +108,31 @@
                             {{ form.notes.label(class="form-label") }}
                             {{ form.notes(class="form-control editable-field", rows="4", disabled=True) }}
                         </div>
+{#                    <div class="mb-3">#}
+{#                            {{ form.audio_file.label(class="form-label") }}#}
+{#                            {% if song.audio_path %}#}
+{#                                <audio controls class="w-100 mb-2" src="{{ url_for('main.media', filename=song.audio_path) }}"></audio>#}
+{#                            {% endif %}#}
+{#                            {{ form.audio_file(class="form-control editable-field" + (" is-invalid" if form.audio_file.errors else ""), accept="audio/mpeg,.mp3", disabled=True) }}#}
+{#                            {% for error in form.audio_file.errors %}#}
+{#                                <div class="invalid-feedback d-block">{{ error }}</div>#}
+{#                            {% endfor %}#}
+{#                            <div class="form-text">{% if song.audio_path %}Ανεβάστε νέο αρχείο για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε αρχείο ήχου (mp3).{% endif %}</div>#}
+{#                        </div>#}
+
+{#                        <div class="mb-3">#}
+{#                            {{ form.image_file.label(class="form-label") }}#}
+{#                            {% if song.image_path %}#}
+{#                                <div class="mb-2">#}
+{#                                    <img src="{{ url_for('main.media', filename=song.image_path) }}" alt="{{ song.title }}" class="img-thumbnail" style="max-height: 200px;">#}
+{#                                </div>#}
+{#                            {% endif %}#}
+{#                            {{ form.image_file(class="form-control editable-field" + (" is-invalid" if form.image_file.errors else ""), accept="image/*", disabled=True) }}#}
+{#                            {% for error in form.image_file.errors %}#}
+{#                                <div class="invalid-feedback d-block">{{ error }}</div>#}
+{#                            {% endfor %}#}
+{#                            <div class="form-text">{% if song.image_path %}Ανεβάστε νέα εικόνα για αντικατάσταση.{% else %}Προαιρετικό: ανεβάστε εικόνα.{% endif %}</div>#}
+{#                        </div>#}
                     </form>
 
                     <div id="edit-actions" class="d-grid gap-2 mb-2 {% if not is_edit_mode %}d-none{% endif %}">
