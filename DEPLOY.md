@@ -1,4 +1,4 @@
-how# Deploying to a Raspberry Pi (Docker + CasaOS)
+# Deploying to a Raspberry Pi (Docker + CasaOS)
 
 This app ships as a Docker stack: the Flask app (served by gunicorn) plus a
 PostgreSQL database. Configuration is read from a `.env` file, the database is
