@@ -4,7 +4,7 @@
 {% block body %}
     <h1 class="mb-4 text-center">Καλλιτέχνες</h1>
 
-    {{ listm.greek_alphabet_filter('main.persons_list', letter, greek_letters, available_letters, sort, direction, per_page) }}
+    {{ listm.greek_alphabet_filter('main.persons_list', letter, greek_letters, available_letters, sort, direction, per_page, latin_letters) }}
 
     {{ listm.list_controls('main.persons_list', sort, direction, per_page, sort_options, per_page_choices, letter) }}
 

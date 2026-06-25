@@ -284,44 +284,47 @@ def _paginate(query, sort_options):
 @main_bp.route('/songs')
 def songs_list():
     query = Song.query.options(db.selectinload(Song.people).joinedload(PeopleSong.person))
-    letter = _resolve_letter()
-    available_letters = _available_letters(Song.title)
-    query = _apply_letter_filter(query, Song.title, letter)
+    letter = _resolve_letter(latin=True)
+    available_letters = _available_letters(Song.title, latin=True)
+    query = _apply_letter_filter(query, Song.title, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, SONG_SORT_OPTIONS)
     return render_template(
         'List_pages/songs_list.html', pagination=pagination, songs=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=SONG_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
-        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
+        letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
+        available_letters=available_letters,
     )
 
 
 @main_bp.route('/disks')
 def disks_list():
     query = Disk.query.options(db.joinedload(Disk.company))
-    letter = _resolve_letter()
-    available_letters = _available_letters(Disk.name)
-    query = _apply_letter_filter(query, Disk.name, letter)
+    letter = _resolve_letter(latin=True)
+    available_letters = _available_letters(Disk.name, latin=True)
+    query = _apply_letter_filter(query, Disk.name, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, DISK_SORT_OPTIONS)
     return render_template(
         'List_pages/disks_list.html', pagination=pagination, disks=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
-        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
+        letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
+        available_letters=available_letters,
     )
 
 
 @main_bp.route('/persons')
 def persons_list():
-    letter = _resolve_letter()
-    available_letters = _available_letters(Person.name)
-    query = _apply_letter_filter(Person.query, Person.name, letter)
+    letter = _resolve_letter(latin=True)
+    available_letters = _available_letters(Person.name, latin=True)
+    query = _apply_letter_filter(Person.query, Person.name, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, PERSON_SORT_OPTIONS)
     return render_template(
         'List_pages/persons_list.html', pagination=pagination, persons=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=PERSON_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
-        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
+        letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
+        available_letters=available_letters,
     )
 
 
@@ -343,15 +346,16 @@ def companies_list():
 @main_bp.route('/disk-labels')
 def disk_labels_list():
     query = DiskLabel.query.options(db.joinedload(DiskLabel.company))
-    letter = _resolve_letter()
-    available_letters = _available_letters(DiskLabel.label)
-    query = _apply_letter_filter(query, DiskLabel.label, letter)
+    letter = _resolve_letter(latin=True)
+    available_letters = _available_letters(DiskLabel.label, latin=True)
+    query = _apply_letter_filter(query, DiskLabel.label, letter, latin=True)
     pagination, sort, direction, per_page = _paginate(query, DISK_LABEL_SORT_OPTIONS)
     return render_template(
         'List_pages/disk_labels_list.html', pagination=pagination, labels=pagination.items,
         sort=sort, direction=direction, per_page=per_page, sort_options=DISK_LABEL_SORT_OPTIONS,
         per_page_choices=PER_PAGE_CHOICES,
-        letter=letter, greek_letters=GREEK_LETTERS, available_letters=available_letters,
+        letter=letter, greek_letters=GREEK_LETTERS, latin_letters=LATIN_LETTERS,
+        available_letters=available_letters,
     )
 
 
